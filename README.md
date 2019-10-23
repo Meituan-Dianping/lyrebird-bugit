@@ -79,6 +79,7 @@ BugIt支持自动填充Lyrebird运行过程中抓取到的数据信息。
 
 ## 插件在Bugit中的应用
 
+
 ### Android iOS插件
 
 安装[Android插件](https://meituan-dianping.github.io/lyrebird/guide/plugin.html#android插件)、[iOS插件](https://meituan-dianping.github.io/lyrebird/guide/plugin.html#ios插件)后，BugIt支持设备信息扩展服务。
