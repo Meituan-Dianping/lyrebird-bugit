@@ -99,7 +99,7 @@ def take_screenshot(platform, device_id):
     lyrebird.publish(channel.lower(), cmd)
     return application.make_ok_response(message=f'Take screenshot success!')
 
-
+#get available device from iOS&Android plugin
 def device():
     if request.method == 'GET':
         all_devices = [
