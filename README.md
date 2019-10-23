@@ -1,8 +1,11 @@
 <h1 align="center">Lyrebird - BugIt plugin</h1>
 
+[![Build Status](https://travis-ci.org/Meituan-Dianping/lyrebird-bugit.svg?branch=master)](https://travis-ci.org/Meituan-Dianping/lyrebird-bugit)
 [![PyPI](https://img.shields.io/pypi/v/lyrebird-bugit.svg)](https://pypi.python.org/pypi/lyrebird-bugit)
 ![PyPI](https://img.shields.io/pypi/pyversions/lyrebird-bugit.svg)
 ![GitHub](https://img.shields.io/github/license/meituan-dianping/lyrebird-bugit.svg)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/89854dfac65d4cde9efaebcc6b3845c6)](https://www.codacy.com/manual/dodosophia/lyrebird-bugit?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Meituan-Dianping/lyrebird-bugit&amp;utm_campaign=Badge_Grade)
+
 
 
 **[Lyrebird](https://github.com/Meituan-Dianping/lyrebird)**
