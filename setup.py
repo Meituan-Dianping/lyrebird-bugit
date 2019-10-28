@@ -8,12 +8,12 @@ with open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='lyrebird-bugit',
-    version='1.2.0',
+    version='1.2.1',
     packages=['lyrebird_bugit'],
-    url='https://github.com/meituan/lyrebird',
+    url='https://github.com/Meituan-Dianping/lyrebird-bugit',
     author='HBQA',
     long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description_content_type="text/markdown", npm
     include_package_data=True,
     zip_safe=False,
     classifiers=(

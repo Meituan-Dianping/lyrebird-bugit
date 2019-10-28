@@ -27,6 +27,7 @@ share/python-wheels/
 .vscode/
 *.node_moudules/
 MANIFEST
+*dist/
 
 
 # PyInstaller
