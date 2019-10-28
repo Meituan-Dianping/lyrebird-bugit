@@ -13,7 +13,7 @@ setup(
     url='https://github.com/Meituan-Dianping/lyrebird-bugit',
     author='HBQA',
     long_description=long_description,
-    long_description_content_type="text/markdown", npm
+    long_description_content_type="text/markdown",
     include_package_data=True,
     zip_safe=False,
     classifiers=(
