@@ -118,7 +118,7 @@ export default {
       }
       commit('updateExtraMsg', { index: indexes.propsIndex, value: newDescFormEventbus })
     },
-    saveEditedImage({ id, imageData }) {
+    saveEditedImage({ state, commit }, { id, imageData }) {
       api.saveImage(id, imageData)
     },
     submit({ state, commit }) {
