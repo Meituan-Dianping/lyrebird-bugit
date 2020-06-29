@@ -4,7 +4,7 @@ import { bus } from '@/eventbus'
 export default {
   state: {
     channelNames: [],
-    channelFilters: ['flow', 'notice', 'page', 'android.crash', 'ios.crash'],
+    channelFilters: ['flow', 'notice', 'page', 'android.crash', 'ios.crash', 'snapshot', 'storage'],
     events: [],
     selectedEventId: null,
     eventDetail: '',
@@ -33,7 +33,7 @@ export default {
   actions: {
     loadChannelNames({ commit }) {
       // Filter out the target channel
-      commit('setChannelNames', ['flow', 'notice', 'page', 'android.crash', 'ios.crash'])
+      commit('setChannelNames', ['flow', 'notice', 'page', 'android.crash', 'ios.crash', 'snapshot', 'storage'])
     },
     loadEvents({ state, commit }, options = {}) {
       let eventId = null

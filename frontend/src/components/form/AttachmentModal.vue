@@ -13,6 +13,9 @@
           :src="'/plugins/bugit/api/attachments/' + this.attachmentId"
         />
       </p>
+      <p v-else-if="isSnapshot">
+        <CodeEditor read-only language="json" v-model="this.attachmentContent" style="height:500px"/>
+      </p>
       <p v-else>
         <FileViewer :attachmentId="attachmentId"/>
       </p>
@@ -31,20 +34,24 @@
 <script>
 import ImageEditor from '@/components/form/ImageEditor.vue'
 import FileViewer from '@/components/form/FileViewer.vue'
+import CodeEditor from '@/components/event/CodeEditor.vue'
+
 
 export default {
   components: {
     ImageEditor,
-    FileViewer
+    FileViewer,
+    CodeEditor
   },
   created() {
-    this.$bus.$on('displayFile', this.displayFile)
+    this.$bus.$on('displayAttach', this.displayAttach)
   },
   data() {
     return {
       isDisplayFile: false,
       attachmentName: null,
-      attachmentId: null
+      attachmentId: null,
+      attachmentContent: null
     }
   },
   computed: {
@@ -58,13 +65,22 @@ export default {
       let nameSuffix = nameSplit[nameSplit.length - 1]
 
       return imageFileSuffix.indexOf(nameSuffix) > -1
+    },
+    isSnapshot() {
+      if (this.attachmentContent) {
+        this.attachmentContent = JSON.stringify(this.attachmentContent, null, 2)
+        return true 
+      }else {
+        return false
+      }
     }
   },
   methods: {
-    displayFile(data) {
+    displayAttach(data) {
       this.isDisplayFile = true
       this.attachmentName = data.name
       this.attachmentId = data.id
+      this.attachmentContent = data.eventObj
     },
     saveImage() {
       this.$bus.$emit('saveImage')

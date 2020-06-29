@@ -13,7 +13,7 @@
       </Form>
       <Submit></Submit>
     </div>
-    <FileModal/>
+    <AttachmentModal/>
   </div>
 </template>
 
@@ -22,7 +22,7 @@ import InputFormItem from '@/components/form/InputFormItem.vue'
 import SelectFormItem from '@/components/form/SelectFormItem.vue'
 import CompoundTextAreaFormItem from '@/components/form/CompoundTextAreaFormItem.vue'
 import AttachmentsList from '@/components/form/AttachmentsList.vue'
-import FileModal from '@/components/form/FileModal.vue'
+import AttachmentModal from '@/components/form/AttachmentModal.vue'
 import Submit from '@/components/form/Submit.vue'
 
 export default {
@@ -31,7 +31,7 @@ export default {
     SelectFormItem,
     CompoundTextAreaFormItem,
     AttachmentsList,
-    FileModal,
+    AttachmentModal,
     Submit
   },
   computed: {
