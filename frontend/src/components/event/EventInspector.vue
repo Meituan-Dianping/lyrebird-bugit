@@ -172,6 +172,9 @@ export default {
           message: eventObj.message
         })
       }
+      if (eventObj.snapshot) {
+        this.$bus.$emit('addSnapshot', eventObj)
+      }
       if (eventObj.attachments) {
         this.$bus.$emit('addAttachments', eventObj.attachments)
       }

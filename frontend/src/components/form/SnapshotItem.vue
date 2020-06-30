@@ -3,7 +3,7 @@
     <Tooltip content="Click to preview" placement="top">
       <a style="padding-right:10px;color:#515a6e" @click="displayAttach(data)">{{data.name}}</a>
     </Tooltip>
-    <Tooltip content="Delete this attachment" placement="top">
+    <Tooltip content="Delete this snapshot" placement="top">
       <a @click="deleteAttach(data)">delete</a>
     </Tooltip>
   </FormItem>
@@ -14,7 +14,7 @@ export default {
   props: ['data', 'index'],
   methods: {
     deleteAttach(data) {
-      this.$store.dispatch('removeAttachment', { id: data.id, index: this.index })
+      this.$store.commit('deleteSnapshot', this.index )
     },
     displayAttach(data) {
       this.$bus.$emit('displayAttach', data)

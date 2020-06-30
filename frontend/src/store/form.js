@@ -11,6 +11,7 @@ export default {
     ruleValidate: null,
     formValue: {},
     attachmentsList: [],
+    snapshotList: [],
     loadAttachmentCount: 0,
     shownFileName: null,
     submitLock: false,
@@ -21,22 +22,22 @@ export default {
     }
   },
   mutations: {
-    setFormData(state, sourceData) {
+    setFormData (state, sourceData) {
       state.templateDetail[sourceData.index].value = sourceData.value
     },
-    setTemplates(state, templates) {
+    setTemplates (state, templates) {
       state.templates = templates
     },
-    setSelectedTemplateIndex(state, selectedTemplateIndex) {
+    setSelectedTemplateIndex (state, selectedTemplateIndex) {
       state.selectedTemplateIndex = selectedTemplateIndex
     },
-    setTemplateDetail(state, templateDetail) {
+    setTemplateDetail (state, templateDetail) {
       state.templateDetail = templateDetail
     },
-    setSubmitLock(state, isLock) {
+    setSubmitLock (state, isLock) {
       state.submitLock = isLock
     },
-    updateFormInfo(state, template) {
+    updateFormInfo (state, template) {
       for (let i in state.metadata) {
         if (state.metadata[i].key === template) {
           state.formInfo = state.metadata[i]
@@ -44,43 +45,50 @@ export default {
         }
       }
     },
-    updateRuleValidate(state, ruleValidate) {
+    updateRuleValidate (state, ruleValidate) {
       state.ruleValidate = ruleValidate
     },
-    updateFormValue(state, formValue) {
+    updateFormValue (state, formValue) {
       state.formValue = formValue
     },
-    deleteFormValue(state, formValue) {
+    deleteFormValue (state, formValue) {
       state.formValue = {}
     },
-    updateExtraMsg(state, msg) {
+    updateExtraMsg (state, msg) {
       state.templateDetail[msg.index].extraMsg = msg.value
     },
-    addExtraMsg(state, msg) {
+    addExtraMsg (state, msg) {
       let value = msg.value
       state.templateDetail[msg.index].extraMsg.push(value)
     },
-    deleteExtraMsg(state, indexes) {
+    deleteExtraMsg (state, indexes) {
       state.templateDetail[indexes.propsIndex].extraMsg.splice(indexes.index, 1)
     },
-    updateAttachmentsList(state, attachmentsList) {
+    updateAttachmentsList (state, attachmentsList) {
       state.attachmentsList = attachmentsList
     },
-    addAttachmentsList(state, attachment) {
+    addAttachmentsList (state, attachment) {
       state.attachmentsList.push(attachment)
     },
-    updateShownFileName(state, name) {
+    updateShownFileName (state, name) {
       state.shownFileName = name
     },
-    updateShownFileContent(state, fileInfo) {
+    updateShownFileContent (state, fileInfo) {
       state.shownFileContent = fileInfo
     },
-    deleteAttachment(state, index) {
+    deleteAttachment (state, index) {
       state.attachmentsList.splice(index, 1)
+    },
+    addSnapshot (state, snapshot) {
+      let fileName = 'snapshot_' + snapshot.id
+      state.snapshotList.push({ 'name': fileName, 'eventObj': snapshot })
+    },
+    deleteSnapshot (state, index) {
+      state.snapshotList.splice(index, 1)
     }
   },
   actions: {
-    loadTemplateList({ commit, dispatch }) {
+    loadTemplateList ({ commit, dispatch }) {
       api.getTemplate().then(response => {
         if (response.data.code === 1000) {
           commit('setSelectedTemplateIndex', response.data.selected_index)
@@ -91,7 +99,7 @@ export default {
         }
       })
     },
-    loadTemplate({ state, commit }) {
+    loadTemplate ({ state, commit }) {
       if (state.selectedTemplateIndex === null) {
         return
       }
@@ -100,11 +108,11 @@ export default {
         commit('setTemplateDetail', response.data)
       })
     },
-    updateSelectedTemplateIndex({ commit, dispatch }, selectedTemplateIndex) {
+    updateSelectedTemplateIndex ({ commit, dispatch }, selectedTemplateIndex) {
       commit('setSelectedTemplateIndex', selectedTemplateIndex)
       dispatch('loadTemplate')
     },
-    setExtraMsgUpward({ state, commit }, indexes) {
+    setExtraMsgUpward ({ state, commit }, indexes) {
       let descFormEventbus = state.templateDetail[indexes.propsIndex].extraMsg
       let index = indexes.index
       let upDesc = descFormEventbus[index]
@@ -118,14 +126,14 @@ export default {
       }
       commit('updateExtraMsg', { index: indexes.propsIndex, value: newDescFormEventbus })
     },
-    saveEditedImage({ state, commit }, { id, imageData }) {
+    saveEditedImage ({ state, commit }, { id, imageData }) {
       api.saveImage(id, imageData)
     },
-    submit({ state, commit }) {
+    submit ({ state, commit }) {
       bus.$emit('message', 'Submitting issue ...')
       commit('setSubmitLock', true)
       api.createIssue(state.templates[state.selectedTemplateIndex], state.templateDetail,
-        state.attachmentsList)
+        state.attachmentsList, state.snapshotList)
         .then(response => {
           bus.$emit('message', response.data)
           commit('setSubmitLock', false)
@@ -133,23 +141,22 @@ export default {
           bus.$emit('message', response.data)
           commit('setSubmitLock', false)
         })
-
     },
-    loadAttachment({ state, commit }) {
+    loadAttachment ({ state, commit }) {
       api.getAttachments().then(response => {
         commit('updateAttachmentsList', response.data)
         if (state.attachmentsList.length > 0 && state.loadAttachmentCount > 0) {
           const index = state.attachmentsList.length - 1
-          bus.$emit('displayFile', state.attachmentsList[index])
+          bus.$emit('displayAttach', state.attachmentsList[index])
         }
         state.loadAttachmentCount += 1
       })
     },
-    removeAttachment({ commit }, attachment) {
+    removeAttachment ({ commit }, attachment) {
       commit('deleteAttachment', attachment.index)
       api.removeAttachment(attachment.id)
     },
-    saveCache({ state }) {
+    saveCache ({ state }) {
       if (state.selectedTemplateIndex === null) {
         return
       }

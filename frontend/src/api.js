@@ -40,9 +40,9 @@ export const getEvent = (options) => {
   })
 }
 
-export const getChannelNames = () => {
+export const getDefaultChannelNames = () => {
   return axios({
-    url: '/api/channel'
+    url: '/api/channel/default'
   })
 }
 
@@ -54,14 +54,15 @@ export const saveImage = (id, imageData) => {
   })
 }
 
-export const createIssue = (templateInfo, issue, attachments) => {
+export const createIssue = (templateInfo, issue, attachments, snapshots) => {
   return axios({
     url: API_PREFIX + '/issue',
     method: 'POST',
     data: {
       template: templateInfo,
       issue,
-      attachments
+      attachments,
+      snapshots
     }
   })
 }

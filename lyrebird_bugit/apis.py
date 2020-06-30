@@ -12,12 +12,12 @@ from lyrebird.mock.context import make_fail_response, make_ok_response
 from . import event_handler
 from . import template_loader
 from . import cache
+from . import attachment
 import traceback
 from hashlib import md5
 
 
 logger = log.get_logger()
-
 
 def template():
     if request.method == 'GET':
@@ -57,7 +57,11 @@ def issue():
 
     issue_data = issue_req['issue']
     attachments = issue_req['attachments']
+    snapshots = issue_req['snapshots']
 
+    # Export Snapshot
+    for snapshot in snapshots:
+        attachments.append(attachment.export_snapshot(snapshot))
     # Set bugit script context
     context = {'issue': issue_data, 'attachments': attachments}
     # Set submit actions
@@ -85,6 +89,8 @@ def issue():
             'data': issue_data
         }
     })
+    #Delete Snapshot
+    attachment.remove_attach()
     return application.make_ok_response(message="Create issue success!")
 
 
