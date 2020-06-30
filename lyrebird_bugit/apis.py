@@ -89,6 +89,8 @@ def issue():
             'data': issue_data
         }
     })
+    #Delete Snapshot
+    attachment.remove_attach()
     return application.make_ok_response(message="Create issue success!")
 
 

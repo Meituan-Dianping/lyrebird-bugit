@@ -147,7 +147,7 @@ export default {
         commit('updateAttachmentsList', response.data)
         if (state.attachmentsList.length > 0 && state.loadAttachmentCount > 0) {
           const index = state.attachmentsList.length - 1
-          bus.$emit('displayFile', state.attachmentsList[index])
+          bus.$emit('displayAttach', state.attachmentsList[index])
         }
         state.loadAttachmentCount += 1
       })

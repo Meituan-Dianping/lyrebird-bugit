@@ -40,9 +40,9 @@ export const getEvent = (options) => {
   })
 }
 
-export const getChannelNames = () => {
+export const getDefaultChannelNames = () => {
   return axios({
-    url: '/api/channel'
+    url: '/api/channel/default'
   })
 }
 
