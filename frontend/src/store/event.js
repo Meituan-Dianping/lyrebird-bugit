@@ -4,7 +4,7 @@ import { bus } from '@/eventbus'
 export default {
   state: {
     channelNames: [],
-    channelFilters: ['flow'],
+    channelFilters: ['notice'],
     events: [],
     selectedEventId: null,
     eventDetail: '',
