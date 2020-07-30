@@ -4,7 +4,7 @@ import { bus } from '@/eventbus'
 export default {
   state: {
     channelNames: [],
-    channelFilters: ['notice'],
+    channelFilters: ['flow', 'notice', 'snapshot'],
     events: [],
     selectedEventId: null,
     eventDetail: '',
@@ -36,7 +36,6 @@ export default {
       api.getDefaultChannelNames().then(response => {
         if (response.data.code === 1000) {
           commit('setChannelNames', response.data.data)
-          commit('setChannelFilters', response.data.data)
         }
       })
     },
