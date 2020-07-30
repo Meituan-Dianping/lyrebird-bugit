@@ -15,6 +15,7 @@ export default {
     loadAttachmentCount: 0,
     shownFileName: null,
     submitLock: false,
+    loadTemplate: false,
     shownFileContent: {
       code: null,
       type: null,
@@ -36,6 +37,9 @@ export default {
     },
     setSubmitLock (state, isLock) {
       state.submitLock = isLock
+    },
+    setLoadTemplate (state, isLoad) {
+      state.loadTemplate = isLoad
     },
     updateFormInfo (state, template) {
       for (let i in state.metadata) {
@@ -104,8 +108,14 @@ export default {
         return
       }
       const path = state.templates[state.selectedTemplateIndex].path
+      commit('setTemplateDetail', [])
+      commit('setLoadTemplate', true)
       api.getTemplate(path).then(response => {
         commit('setTemplateDetail', response.data)
+        commit('setLoadTemplate', false)
+      }).catch(response => {
+        bus.$emit('message', response.data)
+        commit('setLoadTemplate', false)
       })
     },
     updateSelectedTemplateIndex ({ commit, dispatch }, selectedTemplateIndex) {
