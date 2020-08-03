@@ -64,10 +64,10 @@ export default {
     ContextMenuItem
   },
   created () {
+    this.$store.dispatch('loadChannelNames')
     const urlParams = new URLSearchParams(window.location.search)
     const eventId = urlParams.get('event_id')
     this.$store.dispatch('loadEvents', { eventId: eventId })
-    this.$store.dispatch('loadChannelNames')
     this.$bus.$on('contextmenu.show', this.showContextMenu)
     this.$bus.$on('contextmenu.dismiss', this.dismissContextMenu)
   },

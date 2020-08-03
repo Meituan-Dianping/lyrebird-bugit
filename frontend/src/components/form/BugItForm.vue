@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="fields">
-      <Form class="split-left-form" :label-width="80">
+      <Form class="split-left-form" :label-width="100">
         <component
           :is="getFormComponentByData(index, field)"
           v-for="(field, index) in fields"
@@ -10,6 +10,7 @@
           :index="index"
         ></component>
         <AttachmentsList/>
+        <Spin fix v-if="loadTempalte">Loading Tempalte</Spin>
       </Form>
       <Submit></Submit>
     </div>
@@ -37,6 +38,9 @@ export default {
   computed: {
     fields() {
       return this.$store.state.form.templateDetail
+    },
+    loadTempalte(){
+      return this.$store.state.form.loadTemplate
     }
   },
   methods: {

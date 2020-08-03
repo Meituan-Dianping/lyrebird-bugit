@@ -12,10 +12,10 @@
     "@toast-ui/vue-image-editor": "^1.0.2",
     "axios": "^0.18.0",
     "crypto": "^1.0.1",
-    "iview": "^3.4.0",
     "monaco-editor": "^0.16.2",
     "monaco-editor-webpack-plugin": "^1.7.0",
     "socket.io-client": "^2.2.0",
+    "view-design": "^4.3.2",
     "vue": "^2.6.10",
     "vuex": "^3.0.1"
   },
