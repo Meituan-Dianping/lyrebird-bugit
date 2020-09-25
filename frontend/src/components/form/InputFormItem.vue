@@ -1,5 +1,5 @@
 <template>
-  <FormItem :label="data.name">
+  <FormItem :label="data.name" :required="isRequired">
     <div>
       <input
         type="text"
@@ -29,6 +29,13 @@ export default {
         return this.data.name
       } else {
         return ''
+      }
+    },
+    isRequired(){
+      if(this.data.required){
+        return this.data.required
+      }else{
+        return false
       }
     }
   }

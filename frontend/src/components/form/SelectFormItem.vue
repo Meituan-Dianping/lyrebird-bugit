@@ -1,8 +1,8 @@
 <template>
-  <FormItem :label="data.name">
+  <FormItem :label="data.name" :required="isRequired">
     <div>
       <Select size="small" :clearable="!data.required" :multiple="data.multiple"
-      v-model="formItemData">
+      v-model="formItemData" filterable :placeholder="placeholder">
         <Option
           v-for="(option, index) in data.options"
           :key="index"
@@ -18,12 +18,26 @@ export default {
   props: ['data', 'index'],
   computed: {
     formItemData: {
-      get () { 
+      get () {
         return this.$store.state.form.templateDetail[this.index].value
       },
       set (val) {
         const index = this.index
         this.$store.commit('setFormData', { index, value: val })
+      }
+    },
+    isRequired(){
+      if(this.data.required){
+        return this.data.required
+      }else{
+        return false
+      }
+    },
+    placeholder () {
+      if (this.data) {
+        return this.data.name
+      } else {
+        return ''
       }
     }
   }

@@ -1,5 +1,5 @@
 <template>
-  <FormItem :label="data.name">
+  <FormItem :label="data.name" :required="isRequired">
     <div style="background:#eee;padding:10px">
       <Input
         type="textarea"
@@ -34,6 +34,15 @@ export default {
     },
     sortDesc(index) {
       this.$store.dispatch('setExtraMsgUpward', { index, propsIndex: this.index })
+    }
+  },
+  computed: {
+    isRequired(){
+      if(this.data.required){
+        return this.data.required
+      }else{
+        return false
+      }
     }
   }
 }
