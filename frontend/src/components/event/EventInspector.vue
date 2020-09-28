@@ -169,7 +169,9 @@ export default {
       if (eventObj.message) {
         this.$bus.$emit('addMessage', {
           channel: eventObj.channel,
-          message: eventObj.message
+          message: eventObj.message,
+          id: eventObj.id,
+          sender: eventObj.sender
         })
       }
       if (eventObj.snapshot) {
