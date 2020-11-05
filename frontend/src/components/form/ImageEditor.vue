@@ -91,7 +91,7 @@ export default {
   methods: {
     showTextInput (isShown, mouseEvent) {
       const textPosition = this.event2position(mouseEvent)
-      this.inputLeft = mouseEvent.clientX - this.canvasBounds.left + 90 + 'px'
+      this.inputLeft = mouseEvent.clientX - this.canvasBounds.left + this.canvas.offsetLeft + 'px'
       this.inputTop = mouseEvent.clientY - this.canvasBounds.top + 'px'
       this.textX = textPosition.x
       this.textY = textPosition.y
