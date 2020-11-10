@@ -9,21 +9,21 @@
       </span>
       <span v-for="(device, index) in devicesInfo" :key="index" class="device-btn-group">
         <a @click="addDevice(device)" class="device-btn">
-          <Tooltip max-width="300" placement="bottom-end">
+          <Tooltip max-width="400" placement="bottom-end">
             <span>
               <Icon v-if="device.platform === 'Android'" type="logo-android"/>
               <Icon v-else type="logo-apple"/>
               {{device.info.model}}
             </span>
             <div slot="content">
-              <p>Click to add the following info into description</p>
-              <p>--------------------------------------------------------------</p>
+              <p>Click to add the following info to description</p>
+              <p>-----------------------------------------------------------</p>
               <Row v-for="(value, key) in device.info" :key="key" style="width:200px">
-                <i-col span="8" v-if="value">
+                <i-col span="9" v-if="value">
                   <b v-if="DeviceInfoAllUpperKey.indexOf(key) > -1" style="float: right">{{key.toUpperCase()}}</b>
                   <b v-else style="float: right">{{key.charAt(0).toUpperCase() + key.slice(1)}}</b>
                 </i-col>
-                <i-col span="15" offset="1">{{value}}</i-col>
+                <i-col span="14" offset="1">{{value}}</i-col>
               </Row>
             </div>
           </Tooltip>

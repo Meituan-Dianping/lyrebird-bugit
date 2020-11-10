@@ -15,7 +15,7 @@
         </Tooltip>
       </Col>
       <Col span="18" style=" text-align:right">
-        <Tag color="green" style="max-width:100%">{{data.sender.file}}</Tag>
+        <Tag v-if="data.sender" color="green" style="max-width:100%">{{data.sender.file}}</Tag>
       </Col>
     </Row>
     <Input v-model="data.message" type="textarea" :autosize="{ minRows: 2, maxRows: 20 }" />
