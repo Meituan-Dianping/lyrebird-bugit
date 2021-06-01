@@ -15,7 +15,7 @@
         <Tooltip content="Save (⌘+s)" placement="top" :delay="500">
           <Button @click="onSave" long type="info">
             <span>
-              <b>Save</b>
+              <b>Draft</b>
             </span>
           </Button>
         </Tooltip>
