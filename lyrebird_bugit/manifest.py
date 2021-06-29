@@ -6,6 +6,7 @@ from . import event_handler
 manifest(
     id='bugit',
     name='BugIt',
+    icon='mdi-bug-outline',
     api=[
         ('/api/template', apis.template, ['GET', 'POST']),
         ('/api/device', apis.device, ['GET']),
