@@ -70,6 +70,8 @@ def issue():
     for action_function in submit_action_functions:
         try:
             action_function(context)
+        except BugitErrorMessage as e:
+            return application.make_fail_response(str(e))
         except Exception:
             error_message = traceback.format_exc()
             trace = "<br/>".join(error_message.split("\n"))
@@ -163,3 +165,8 @@ def ui_cache(key):
                 del field['extraMsg']
         cache.put(key, data)
         return application.make_ok_response()
+
+
+class BugitErrorMessage(Exception):
+    pass
+        
