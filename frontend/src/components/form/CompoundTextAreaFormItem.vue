@@ -1,5 +1,11 @@
 <template>
-  <FormItem :label="data.name" :required="isRequired">
+  <FormItem :required="isRequired">
+    <span slot="label">
+      <span>{{data.name}}</span>
+      <Tooltip  :content="data.label">
+        <Icon type="ios-help-circle-outline" />
+      </Tooltip>
+    </span>
     <div style="background:#eee;padding:10px">
       <Input
         type="textarea"
