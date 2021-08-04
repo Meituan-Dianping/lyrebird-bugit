@@ -2,7 +2,7 @@
   <FormItem :required="isRequired">
     <span slot="label">
       <span>{{data.name}}</span>
-      <Tooltip  :content="data.label">
+      <Tooltip  :content="data.label" max-width="300">
         <Icon type="ios-help-circle-outline" />
       </Tooltip>
     </span>
@@ -42,9 +42,6 @@ export default {
         return ''
       }
     }
-    // showTips () {
-    //   return this.data.label
-    // }
   }
 }
 </script>
