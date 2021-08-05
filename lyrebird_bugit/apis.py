@@ -165,7 +165,3 @@ def ui_cache(key):
                 del field['extraMsg']
         cache.put(key, data)
         return application.make_ok_response()
-
-
-class BugitErrorMessage(Exception):
-    pass
