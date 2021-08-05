@@ -70,9 +70,9 @@ def issue():
     for action_function in submit_action_functions:
         try:
             action_function(context)
-        except BugitErrorMessage as e:
-            return application.make_fail_response(str(e))
-        except Exception:
+        except Exception as e:
+            if e.__class__.__name__ == 'BugitFormInputError':
+                return application.make_fail_response(str(e))
             error_message = traceback.format_exc()
             trace = "<br/>".join(error_message.split("\n"))
             lyrebird.report({
@@ -169,4 +169,3 @@ def ui_cache(key):
 
 class BugitErrorMessage(Exception):
     pass
-        
