@@ -59,6 +59,8 @@ def issue():
     attachments = issue_req['attachments']
     snapshots = issue_req['snapshots']
 
+    all_bugit_message = ''
+
     # Export Snapshot
     for snapshot in snapshots:
         attachments.append(attachment.export_snapshot(snapshot))
@@ -69,7 +71,9 @@ def issue():
     # Do submit
     for action_function in submit_action_functions:
         try:
-            action_function(context)
+            bug_url = action_function(context)
+            if bug_url:
+                all_bugit_message += bug_url
         except Exception as e:
             if e.__class__.__name__ == 'BugitFormInputError':
                 return application.make_fail_response(str(e))
@@ -93,7 +97,7 @@ def issue():
     })
     #Delete Snapshot
     attachment.remove_attach()
-    return application.make_ok_response(message="Create issue success!")
+    return application.make_ok_response(message=f'Create issue success! {all_bugit_message}')
 
 
 def take_screenshot(platform, device_id):
