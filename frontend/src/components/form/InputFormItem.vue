@@ -1,11 +1,5 @@
 <template>
-  <FormItem :required="isRequired">
-    <span slot="label">
-      <span>{{data.name}}</span>
-      <Tooltip v-if="showTips" :content="data.label" max-width="300" placement="bottom-start">
-        <Icon type="ios-help-circle-outline" />
-      </Tooltip>
-    </span>
+  <FormItem :label="data.name" :required="isRequired">
     <div>
       <input
         type="text"
@@ -32,6 +26,9 @@ export default {
     },
     placeholder () {
       if (this.data) {
+        if (this.data.label) {
+          return this.data.label
+        }
         return this.data.name
       } else {
         return ''
@@ -39,9 +36,6 @@ export default {
     },
     isRequired () {
       return Boolean(this.data.required)
-    },
-    showTips () {
-      return this.data.label
     }
   }
 }

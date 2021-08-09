@@ -1,11 +1,5 @@
 <template>
-  <FormItem :required="isRequired">
-    <span slot="label">
-      <span>{{data.name}}</span>
-      <Tooltip v-if="showTips" :content="data.label" max-width="300" placement="bottom-start">
-        <Icon type="ios-help-circle-outline" />
-      </Tooltip>
-    </span>
+  <FormItem :label="data.name" :required="isRequired">
     <div>
       <Select size="small" :clearable="!data.required" :multiple="data.multiple"
       v-model="formItemData" filterable :placeholder="placeholder">
@@ -37,13 +31,13 @@ export default {
     },
     placeholder () {
       if (this.data) {
+        if (this.data.label) {
+          return this.data.label
+        }
         return this.data.name
       } else {
         return ''
       }
-    },
-    showTips () {
-      return this.data.label
     }
   }
 }
