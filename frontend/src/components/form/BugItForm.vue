@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="fields">
-      <Form class="split-left-form" :label-width="110">
+      <Form class="split-left-form" :label-width="100">
         <component
           :is="getFormComponentByData(index, field)"
           v-for="(field, index) in fields"
