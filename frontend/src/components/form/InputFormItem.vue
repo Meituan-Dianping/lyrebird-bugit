@@ -25,14 +25,10 @@ export default {
       }
     },
     placeholder () {
-      if (this.data) {
-        if (this.data.label) {
-          return this.data.label
-        }
-        return this.data.name
-      } else {
+      if (!this.data) {
         return ''
       }
+      return this.data.placeholder ? this.data.placeholder : this.data.name
     },
     isRequired () {
       return Boolean(this.data.required)
