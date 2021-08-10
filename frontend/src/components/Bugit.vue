@@ -85,7 +85,7 @@ export default {
         if (data.code === 1000) {
           this.$Message.success({
             content: data.message,
-            duration: 3,
+            duration: 10,
             closable: true
           })
         } else if (data.code === 3000) {

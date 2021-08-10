@@ -37,7 +37,7 @@ export default {
     }
   },
   computed: {
-    isRequired(){
+    isRequired () {
       return Boolean(this.data.required)
     }
   }

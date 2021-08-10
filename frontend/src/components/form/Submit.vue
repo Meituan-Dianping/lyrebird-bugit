@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Row style="margin: 10px;" gutter="16">
+    <Row style="margin: 10px;" :gutter="16">
       <i-col span="18">
         <Button @click="onSubmit" long type="primary" :loading="submitLock">
           <span v-if="!submitLock">

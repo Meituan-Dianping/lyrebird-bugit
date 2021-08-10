@@ -4,16 +4,13 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit"
+    "build": "vue-cli-service build"
   },
   "dependencies": {
     "@toast-ui/vue-image-editor": "^1.0.2",
     "axios": "^0.18.0",
     "crypto": "^1.0.1",
-    "monaco-editor": "^0.16.2",
-    "monaco-editor-webpack-plugin": "^1.7.0",
+    "monaco-editor": "^0.26.1",
     "socket.io-client": "^2.2.0",
     "view-design": "^4.3.2",
     "vue": "^2.6.10",
@@ -31,6 +28,7 @@
     "babel-jest": "^24.7.1",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
+    "monaco-editor-webpack-plugin": "^4.1.1",
     "vue-template-compiler": "^2.6.10"
   },
   "eslintConfig": {

@@ -25,13 +25,12 @@ export default {
       }
     },
     placeholder () {
-      if (this.data) {
-        return this.data.name
-      } else {
+      if (!this.data) {
         return ''
       }
+      return this.data.placeholder ? this.data.placeholder : this.data.name
     },
-    isRequired(){
+    isRequired () {
       return Boolean(this.data.required)
     }
   }
