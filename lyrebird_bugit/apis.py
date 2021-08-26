@@ -21,13 +21,23 @@ logger = log.get_logger()
 
 def template():
     if request.method == 'GET':
+        if cache.isOldFile():
+            #修改select_template文件
+            cache.add_selected_template()
+            #生成旧草稿信息文件，给旧草稿改名
+            cache_key = md5('默认草稿'.encode()).hexdigest()
+            if not cache.add_info_file_to_cache(cache_key):
+                return application.make_fail_response('加载草稿失败')
+
         templates = template_loader.template_list()
         selected_index = None
-        last_selected_template = cache.get_selected_template()
+        last_selected_cache, last_selected_template = None, None
+        if cache.get_selected_template():
+            last_selected_template, last_selected_cache = cache.get_selected_template()
         for index, template in enumerate(templates):
             if template['path'] == last_selected_template:
                 selected_index = index
-        return application.make_ok_response(selected_index=selected_index, templates=templates)
+        return application.make_ok_response(selected_index=selected_index, templates=templates, selected_cache=last_selected_cache)
     elif request.method == 'POST':
         '''
         Get template detail by path
@@ -35,17 +45,26 @@ def template():
         '''
         if request.json and 'path' in request.json:
             template_path = request.json['path']
+            template_cache = request.json.get('cache_name')
+            if not template_cache:
+                template_cache = ''
+                # cache.selected_template(template_path, template_cache)
+
             template = template_loader.get_template(template_path)
             # load from cache
             template_key = md5(template_path.encode()).hexdigest()
-            template_detail = cache.get(template_key)
+            cache_key = md5(template_cache.encode()).hexdigest()
+            file_name = template_key + '_' + cache_key
+            template_detail = cache.get(file_name)
             # load from template
             if inspect.getargspec(template.form).args:
                 template_detail = template.form({'cache': template_detail})
             else:
                 template_detail = template.form()
-            cache.selected_template(template_path)
+            cache.selected_template(template_path, template_cache)
             return jsonify(template_detail)
+            
+
         else:
             return application.make_fail_response('Need path argument for getting template detail')
 
@@ -155,17 +174,47 @@ def attachments(attachment_id=None):
         return make_ok_response()
 
 
-def ui_cache(key):
+def ui_cache(template_key):
     if request.method == 'GET':
-        data = cache.get(key)
-        if data:
-            return application.make_ok_response(data=data)
-        else:
-            return application.make_fail_response(f'Not found cache by key {key}')
+        data = cache.getCacheName(template_key)
+        # if data:
+        return application.make_ok_response(data=data)
+        # else:
+            # return application.make_fail_response(f'Not found cache by key')
     elif request.method == 'POST':
-        data = request.json
-        for field in data:
+        # 判断是否传回来
+        template_path = request.json.get('templatePath')
+        template_detail = request.json.get('templateDetail')
+        cache_name = request.json.get('cache_name')
+        data_info = {}
+        for field in template_detail:
             if 'extraMsg' in field:
                 del field['extraMsg']
-        cache.put(key, data)
-        return application.make_ok_response()
+        if template_key and template_detail and cache_name:
+            cache_key = md5(cache_name.encode()).hexdigest()
+            # 判断是否重名
+            # 生成文件templateKey_cacheName存templateDetail
+            template_detail_filename = template_key + '_' + cache_key
+            template_info_filename = template_detail_filename + '.info'
+            data_info['cache_name'] = cache_name
+            cache.put(template_detail_filename, template_detail)
+            # 生成文件templateKey_cacheName.name,存草稿名、方向
+            cache.put(template_info_filename, data_info)
+            # 修改文件select_template,设置path和cacheName
+            cache.selected_template(template_path, cache_name)
+            return application.make_ok_response()
+        else:
+            return application.make_fail_response(f'保存草稿失败')
+    elif request.method == 'DELETE':
+        cache_key = request.json.get('delete_cache')
+        # 删除草稿内容文件 草稿信息文件
+        template_detail_filename = template_key + '_' + cache_key
+        template_info_filename = template_detail_filename + '.info'
+        if cache.delete(template_detail_filename) and cache.delete(template_info_filename):
+            return application.make_ok_response()
+        else:
+            return application.make_fail_response(f'草稿删除失败')
+        
+        
+class CacheSameName(Exception):
+    pass

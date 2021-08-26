@@ -18,13 +18,15 @@ import BugTemplateSelector from '@/components/BugTemplateSelector.vue'
 import BugItForm from '@/components/form/BugItForm.vue'
 import BugitDevices from '@/components/BugitDevices.vue'
 import BugitExtra from '@/components/BugitExtra.vue'
+import Submit from '@/components/form/Submit.vue'
 
 export default {
   components: {
     BugTemplateSelector,
     BugItForm,
     BugitDevices,
-    BugitExtra
+    BugitExtra,
+    Submit
   },
   data () {
     return {
@@ -43,22 +45,22 @@ export default {
     document.addEventListener('keyup', this.onKeyUp)
   },
   methods: {
-    onKeyDown (event) {
-      if (event.key === 'Meta') {
-        this.metaKey = true
-      }
-      else if (event.key == 's') {
-        if (this.metaKey) {
-          window.event.preventDefault()
-          this.$store.dispatch('saveCache')
-        }
-      }
-    },
-    onKeyUp (event) {
-      if (event.key === 'Meta') {
-        this.metaKey = false
-      }
-    },
+    // onKeyDown (event) {
+    //   if (event.key === 'Meta') {
+    //     this.metaKey = true
+    //   }
+    //   else if (event.key == 's') {
+    //     if (this.metaKey) {
+    //       window.event.preventDefault()
+    //       Submit.enterCacheName = true
+    //     }
+    //   }
+    // },
+    // onKeyUp (event) {
+    //   if (event.key === 'Meta') {
+    //     this.metaKey = false
+    //   }
+    // },
     successMessage (msg) {
       this.$Message.success({
         content: msg,

@@ -14,7 +14,7 @@ manifest(
         ('/api/take_screenshot/<string:platform>/<string:device_id>', apis.take_screenshot, ['GET']),
         ('/api/attachments', apis.attachments, ['GET']),
         ('/api/attachments/<string:attachment_id>', apis.attachments, ['GET', 'PUT', 'DELETE']),
-        ('/api/cache/<string:key>', apis.ui_cache, ['GET', 'POST'])
+        ('/api/cache/<string:template_key>',apis.ui_cache,['GET', 'POST', 'DELETE'])
     ],
     event=[
         ('android.device', event_handler.on_android_device),
