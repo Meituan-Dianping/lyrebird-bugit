@@ -38,7 +38,6 @@ export default {
       state.selectedTemplateIndex = selectedTemplateIndex
     },
     setSelectedCache(state, selectedCache) {
-      // console.log('selectedCache', selectedCache)
       state.selectedCache = selectedCache
     },
     setTemplateDetail(state, templateDetail) {
@@ -106,14 +105,9 @@ export default {
         if (response.data.code === 1000) {
           commit('setSelectedTemplateIndex', response.data.selected_index)
           commit('setTemplates', response.data.templates)
-          // commit('setSelectedCache', response.data.selected_cache)
           dispatch('updateSelectedCache', response.data.selected_cache)
           dispatch('loadTemplate')
           dispatch('loadCacheList')
-          // if (state.selectedTemplateIndex !== null) {
-            
-          // }
-          // console.log('loadCacheLIst',state.cacheList)
         } else {
           bus.$emit('msg.error', response.data.message)
         }
@@ -129,7 +123,6 @@ export default {
       const templateKey = md5.digest('hex')
       api.getCache(templateKey).then(response => {
         if (response.data.code === 1000) {
-          // commit('setSelectedCache', response.data.)
           commit('setCacheList', response.data.data)
         } else {
           bus.$emit('msg.error', '加载失败')
@@ -162,7 +155,6 @@ export default {
     },
     updateSelectedCache({ commit, dispatch, state }, selectedCache) {
       if (selectedCache !== undefined) {
-        console.log('111222333', selectedCache)
         commit('setSelectedCache', selectedCache)
         dispatch('loadTemplate')
       }
@@ -215,7 +207,6 @@ export default {
       if (state.selectedTemplateIndex === null) {
         return
       }
-      console.log('草稿名', cacheName)
       const cache_name_list = []
       for (var cache in state.cacheList) {
         cache_name_list.push(state.cacheList[cache].cache_name)
@@ -257,7 +248,6 @@ export default {
       api.deleteCache(templateKey, deleteCacheKey).then(response => {
         if (response.data.code === 1000) {
           bus.$emit('msg.success', 'Delete success')
-          // commit('setSelectedCache', null)
           dispatch('loadCacheList')
         } else {
           bus.$emit('msg.error', 'Delete failed: ' + response.data.message)

@@ -28,7 +28,6 @@ def template():
             cache_key = md5('默认草稿'.encode()).hexdigest()
             if not cache.add_info_file_to_cache(cache_key):
                 return application.make_fail_response('加载草稿失败')
-
         templates = template_loader.template_list()
         selected_index = None
         last_selected_cache, last_selected_template = None, None
@@ -48,8 +47,6 @@ def template():
             template_cache = request.json.get('cache_name')
             if not template_cache:
                 template_cache = ''
-                # cache.selected_template(template_path, template_cache)
-
             template = template_loader.get_template(template_path)
             # load from cache
             template_key = md5(template_path.encode()).hexdigest()
@@ -177,10 +174,7 @@ def attachments(attachment_id=None):
 def ui_cache(template_key):
     if request.method == 'GET':
         data = cache.getCacheName(template_key)
-        # if data:
         return application.make_ok_response(data=data)
-        # else:
-            # return application.make_fail_response(f'Not found cache by key')
     elif request.method == 'POST':
         # 判断是否传回来
         template_path = request.json.get('templatePath')
@@ -192,7 +186,6 @@ def ui_cache(template_key):
                 del field['extraMsg']
         if template_key and template_detail and cache_name:
             cache_key = md5(cache_name.encode()).hexdigest()
-            # 判断是否重名
             # 生成文件templateKey_cacheName存templateDetail
             template_detail_filename = template_key + '_' + cache_key
             template_info_filename = template_detail_filename + '.info'
@@ -214,7 +207,3 @@ def ui_cache(template_key):
             return application.make_ok_response()
         else:
             return application.make_fail_response(f'草稿删除失败')
-        
-        
-class CacheSameName(Exception):
-    pass

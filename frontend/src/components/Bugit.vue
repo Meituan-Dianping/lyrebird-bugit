@@ -45,22 +45,6 @@ export default {
     document.addEventListener('keyup', this.onKeyUp)
   },
   methods: {
-    // onKeyDown (event) {
-    //   if (event.key === 'Meta') {
-    //     this.metaKey = true
-    //   }
-    //   else if (event.key == 's') {
-    //     if (this.metaKey) {
-    //       window.event.preventDefault()
-    //       Submit.enterCacheName = true
-    //     }
-    //   }
-    // },
-    // onKeyUp (event) {
-    //   if (event.key === 'Meta') {
-    //     this.metaKey = false
-    //   }
-    // },
     successMessage (msg) {
       this.$Message.success({
         content: msg,

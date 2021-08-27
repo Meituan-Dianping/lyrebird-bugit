@@ -46,9 +46,8 @@ export default {
     return {
       enterCacheName: false,
       shownDeleteModal: false,
-      createName: '默认草稿' + new Date().getFullYear() + '-' + (new Date().getMonth()+1) + '-' + new Date().getDay() + ' ' + new Date().getHours() + ':' + new Date().getMinutes() + ':' + new Date().getSeconds(),
-      targetDeleteName: null,
-      // formatDate
+      createName: '默认草稿',
+      targetDeleteName: null
     };
   },
   mounted () {
@@ -60,12 +59,11 @@ export default {
       this.$store.dispatch("submit");
     },
     onSave() {
-      if(!this.createName || this.createName.trim().length === 0) { // 全空格
+      if(!this.createName || this.createName.trim().length === 0) {
         this.$bus.$emit('msg.error', '草稿名称不能为空')
         return
       }
       this.$store.commit('setSelectedCache', this.createName) 
-      console.log('onsave', this.createName)
       this.$store.dispatch("saveCache", this.createName)
       this.enterCacheName = false
     },

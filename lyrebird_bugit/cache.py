@@ -3,7 +3,6 @@ import codecs
 import json
 from flask.json import jsonify
 import lyrebird
-import os
 
 BUGIT_STORAGE = lyrebird.get_plugin_storage()
 CACHE_ROOT = Path(BUGIT_STORAGE)/'cache'
@@ -17,20 +16,6 @@ def get(template_key):
 def put(template_key, data):
     _save_cache_to_file(template_key, data)
 
-
-def getName(name):
-    return _read_cache_name_from_file(name)
-
-
-def putName(name, selectedTemplate):
-    lis = _read_cache_from_file(selectedTemplate)
-    if not lis:
-        lis = []
-    dic = {
-        'name': name
-    }
-    lis.append(dic)
-    _save_cache_to_file(selectedTemplate,lis)
     
 def getCacheName(template_key):
     p_obj = Path(CACHE_ROOT)
@@ -105,22 +90,12 @@ def _check_dir():
     if not CACHE_ROOT.exists():
         CACHE_ROOT.mkdir(parents=True, exist_ok=True)
 
-def _check_file(name):
-    target_file = CACHE_ROOT / name
-    if not target_file.exists():
-        with open(target_file,'a') as f:
-            f.write(jsonify('[]'))
 
 def _save_cache_to_file(name, data):
     _check_dir()
     with codecs.open(str(CACHE_ROOT / name), 'w') as f:
         f.write(json.dumps(data))
 
-
-def _append_cache_name_to_file(append_data, name): # 工具方法
-    _check_dir()
-    with open(str(CACHE_ROOT / name), 'a') as f:
-        f.write(append_data)
 
 def _read_cache_from_file(name):
     _check_dir()
@@ -132,15 +107,3 @@ def _read_cache_from_file(name):
             return json.load(f)
     except Exception:
         return None   
-
-
-def _read_cache_name_from_file(name):
-    _check_dir()
-    target_file = CACHE_ROOT / name
-    # if not target_file.exists():
-    #     return None
-    try:
-        with codecs.open(str(target_file), 'r') as f:
-            return json.load(f)
-    except Exception:
-        return None
