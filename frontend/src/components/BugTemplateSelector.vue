@@ -31,10 +31,11 @@
               :key="index"
               >{{ template.cache_name
               }}<Icon
+                v-if="template.cache_name==selectedCache"
                 class="icon-form"
                 style="float: right"
                 type="md-trash"
-                @click.stop="deleteDraft(template.cache_name)"
+                @click="deleteDraft(template.cache_name)"
             /></Option>
           </Select>
           <Modal v-model="shownDeleteModal">
@@ -44,11 +45,11 @@
             </p>
             <div style="text-align: center">
               <span style="font-size: 14px">
-                Are you sure you want to delete?</span
+                Are you sure you want to delete {{selectedCache}}?</span
               >
             </div>
             <div slot="footer">
-              <Button type="error" size="large" @click.stop="onDelete()"
+              <Button type="error" size="large" @click="onDelete()"
                 >Delete</Button
               >
             </div>
@@ -64,17 +65,20 @@ export default {
   data() {
     return {
       shownDeleteModal: false,
+      targetDeleteCache: null,
     };
   },
   created() {
     this.$store.dispatch("loadTemplateList");
   },
   methods: {
-    deleteDraft() {
+    deleteDraft(template) {
+      this.targetDeleteCache = template
       this.shownDeleteModal = true;
     },
     onDelete() {
       this.shownDeleteModal = false;
+      this.$store.dispatch('deleteCache', this.targetDeleteCache)
     },
   },
   computed: {
@@ -105,7 +109,7 @@ export default {
           this.$store.dispatch("loadTemplate");
         }
       },
-    },
+    }
   },
 };
 </script>
@@ -118,5 +122,8 @@ export default {
 .split-left-template-selector .ivu-form-item {
   margin-bottom: 0px;
   padding-bottom: 5px;
+}
+.input-dropdown {
+  height: 18px;
 }
 </style>
