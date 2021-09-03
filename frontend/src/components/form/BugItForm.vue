@@ -10,7 +10,7 @@
           :index="index"
         ></component>
         <AttachmentsList/>
-        <Spin fix v-if="loadTempalte">Loading Tempalte</Spin>
+        <Spin fix v-if="loadTempalte">Loading Template</Spin>
       </Form>
       <Submit></Submit>
     </div>
