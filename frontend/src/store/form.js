@@ -1,6 +1,5 @@
 import * as api from '@/api'
 import { bus } from '@/eventbus'
-import crypto from 'crypto'
 
 export default {
   state: {
@@ -126,10 +125,7 @@ export default {
         return
       }
       const selectedTemplate = state.templates[state.selectedTemplateIndex]
-      const md5 = crypto.createHash('md5')
-      md5.update(selectedTemplate.path)
-      const templateKey = md5.digest('hex')
-      api.getCache(templateKey)
+      api.getCache(selectedTemplate.id)
         .then(response => {
           if (response.data.code === 1000) {
             commit('setCacheList', response.data.data)
@@ -207,7 +203,7 @@ export default {
     },
     saveCache ({ state, dispatch, commit }) {
       if (!state.createName || state.createName.trim().length === 0) {
-        bus.$emit('msg.error', 'Draft name cannot be empty!')
+        bus.$emit('msg.error', 'Draft name should not be empty!')
         return
       }
       if (state.selectedTemplateIndex === null) {

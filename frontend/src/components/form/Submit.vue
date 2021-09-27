@@ -39,22 +39,7 @@
 
 <script>
 export default {
-  data () {
-    return {
-      shownDeleteModal: false,
-      targetDeleteName: null
-    }
-  },
   computed: {
-    showDrop () {
-      return this.$store.state.form.cacheNameList
-    },
-    cacheNameList () {
-      return this.$store.state.form.cacheNameList
-    },
-    templates () {
-      return this.$store.state.form.cacheNameList
-    },
     submitLock () {
       return this.$store.state.form.submitLock
     },

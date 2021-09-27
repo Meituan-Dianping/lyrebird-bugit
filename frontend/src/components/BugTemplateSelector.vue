@@ -6,7 +6,6 @@
           <Select
             v-model="selectedTemplateIndex"
             filterable
-            clearable
             size="small"
             placeholder="Select template"
             not-found-text="No saved draft"
@@ -62,8 +61,7 @@
 export default {
   data () {
     return {
-      shownDeleteModal: false,
-      deleteDraftName: null
+      shownDeleteModal: false
     }
   },
   created () {
@@ -71,11 +69,10 @@ export default {
   },
   methods: {
     deleteDraft (cacheName) {
-      this.deleteDraftName = cacheName
       this.shownDeleteModal = true
     },
     onDelete () {
-      this.$store.dispatch('deleteCache', this.deleteDraftName)
+      this.$store.dispatch('deleteCache', this.selectedCache)
       this.shownDeleteModal = false
     }
   },

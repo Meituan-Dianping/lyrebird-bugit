@@ -36,7 +36,6 @@ def template_list():
             template_list.append({
                 'name': template.name,
                 'path': str(template_file),
-                # template_file.relative_to(Path('~').expanduser())
                 'id': md5(str(template_file).encode()).hexdigest()
             })
             del template
