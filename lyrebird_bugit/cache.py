@@ -45,11 +45,15 @@ def selected_template(template_path, cache_name):
 
 def get_selected_template():
     _cache = _read_cache_from_file(LAST_SELECT_TEMPLATE_FILENAME)
+    if not _cache:
+        return None
     return _cache.get('path')
 
 
 def get_selected_cache():
     _cache = _read_cache_from_file(LAST_SELECT_TEMPLATE_FILENAME)
+    if not _cache:
+        return None
     return _cache.get('cache_name')
 
 
@@ -75,10 +79,10 @@ def get_draft_list(template_key):
 def check_draft_version():
     _cache = _read_cache_from_file(LAST_SELECT_TEMPLATE_FILENAME)
     if not _cache:
-        return DRAFT_VERSION_V_1_7_0
-    if 'cache_name' not in _cache:
-        return DRAFT_VERSION_V_1_7_0
-    return DRAFT_VERSION_V_1_8_0
+        return DRAFT_VERSION_V_1_8_0
+    if 'cache_name' in _cache:
+        return DRAFT_VERSION_V_1_8_0
+    return DRAFT_VERSION_V_1_7_0
 
 
 def update_selected_template():

@@ -36,6 +36,8 @@ def template():
             if template['path'] == last_selected_template:
                 selected_template_index = index
                 break
+        if not selected_template_index:
+            return application.make_ok_response(templates=templates)
 
         template_key = cache.get_filename(last_selected_template)
         drafts = cache.get_draft_list(template_key)
