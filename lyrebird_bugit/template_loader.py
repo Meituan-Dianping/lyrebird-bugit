@@ -1,5 +1,6 @@
 import imp
 import traceback
+from hashlib import md5
 from pathlib import Path
 from lyrebird import application
 from lyrebird import get_logger
@@ -32,8 +33,12 @@ def template_list():
             logger.debug(f'Load template {template_file}')
             template = imp.load_source(template_file.stem, str(template_file))
             template_check(template)
-            template_list.append(
-                {'name': template.name, 'path': str(template_file)})
+            template_list.append({
+                'name': template.name,
+                'path': str(template_file),
+                # template_file.relative_to(Path('~').expanduser())
+                'id': md5(str(template_file).encode()).hexdigest()
+            })
             del template
         except Exception:
             logger.error(

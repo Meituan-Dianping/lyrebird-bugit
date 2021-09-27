@@ -18,15 +18,13 @@ import BugTemplateSelector from '@/components/BugTemplateSelector.vue'
 import BugItForm from '@/components/form/BugItForm.vue'
 import BugitDevices from '@/components/BugitDevices.vue'
 import BugitExtra from '@/components/BugitExtra.vue'
-import Submit from '@/components/form/Submit.vue'
 
 export default {
   components: {
     BugTemplateSelector,
     BugItForm,
     BugitDevices,
-    BugitExtra,
-    Submit
+    BugitExtra
   },
   data () {
     return {

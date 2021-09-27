@@ -14,56 +14,61 @@ from . import template_loader
 from . import cache
 from . import attachment
 import traceback
-from hashlib import md5
 
 
 logger = log.get_logger()
 
 def template():
     if request.method == 'GET':
-        if cache.isOldFile():
-            #修改select_template文件
-            cache.add_selected_template()
-            #生成旧草稿信息文件，给旧草稿改名
-            cache_key = md5('默认草稿'.encode()).hexdigest()
-            if not cache.add_info_file_to_cache(cache_key):
-                return application.make_fail_response('加载草稿失败')
+        '''
+        Get all template list, all draft list, last selected template and last selected draft
+        '''
+        draft_version = cache.check_draft_version()
+        if draft_version < cache.DRAFT_VERSION_V_1_8_0:
+            logger.info('Updating draft into v1.8.0 from v1.7.0')
+            cache.update_selected_template()
+            cache.update_all_draft_file()
+
         templates = template_loader.template_list()
-        selected_index = None
-        last_selected_cache, last_selected_template = None, None
-        if cache.get_selected_template():
-            last_selected_template, last_selected_cache = cache.get_selected_template()
+        last_selected_template = cache.get_selected_template()
+        selected_template_index = None
         for index, template in enumerate(templates):
             if template['path'] == last_selected_template:
-                selected_index = index
-        return application.make_ok_response(selected_index=selected_index, templates=templates, selected_cache=last_selected_cache)
+                selected_template_index = index
+                break
+
+        template_key = cache.get_filename(last_selected_template)
+        drafts = cache.get_draft_list(template_key)
+        last_selected_cache = cache.get_selected_cache()
+
+        return application.make_ok_response(
+            selected_template_index=selected_template_index,
+            templates=templates,
+            selected_cache=last_selected_cache,
+            drafts=drafts
+        )
+
     elif request.method == 'POST':
         '''
         Get template detail by path
         And save lastest_selected_template
         '''
-        if request.json and 'path' in request.json:
-            template_path = request.json['path']
-            template_cache = request.json.get('cache_name')
-            if not template_cache:
-                template_cache = ''
-            template = template_loader.get_template(template_path)
-            # load from cache
-            template_key = md5(template_path.encode()).hexdigest()
-            cache_key = md5(template_cache.encode()).hexdigest()
-            file_name = template_key + '_' + cache_key
-            template_detail = cache.get(file_name)
-            # load from template
-            if inspect.getargspec(template.form).args:
-                template_detail = template.form({'cache': template_detail})
-            else:
-                template_detail = template.form()
-            cache.selected_template(template_path, template_cache)
-            return jsonify(template_detail)
-            
+        if not request.json or not request.json.get('path'):
+            return application.make_fail_response('Missing required argument: path')
 
+        template_path = request.json['path']
+        draft_name = request.json.get('cache_name', '')
+        draft_filename = cache.get_filename(template_path, draft_name)
+        template_detail = cache.get(draft_filename)
+
+        template = template_loader.get_template(template_path)
+        if inspect.getargspec(template.form).args:
+            template_detail = template.form({'cache': template_detail})
         else:
-            return application.make_fail_response('Need path argument for getting template detail')
+            template_detail = template.form()
+
+        cache.selected_template(template_path, draft_name)
+        return jsonify(template_detail)
 
 
 def issue():
@@ -127,7 +132,7 @@ def take_screenshot(platform, device_id):
     lyrebird.publish(channel.lower(), cmd)
     return application.make_ok_response(message=f'Take screenshot success!')
 
-#get available device from iOS&Android plugin
+# Get available device from iOS&Android plugin
 def device():
     if request.method == 'GET':
         all_devices = [
@@ -173,37 +178,47 @@ def attachments(attachment_id=None):
 
 def ui_cache(template_key):
     if request.method == 'GET':
-        data = cache.getCacheName(template_key)
+        data = cache.get_draft_list(template_key)
         return application.make_ok_response(data=data)
+
     elif request.method == 'POST':
-        # 判断是否传回来
-        template_path = request.json.get('templatePath')
-        template_detail = request.json.get('templateDetail')
+        template_path = request.json.get('template_path')
+        if not template_path:
+            return application.make_fail_response('Missing required argument: template_path')
+
         cache_name = request.json.get('cache_name')
-        data_info = {}
+        if not cache_name:
+            return application.make_fail_response('Missing required argument: cache_name')
+
+        template_detail = request.json.get('data')
+        if not template_detail:
+            return application.make_fail_response('Missing required argument: data')
+
         for field in template_detail:
             if 'extraMsg' in field:
                 del field['extraMsg']
-        if template_key and template_detail and cache_name:
-            cache_key = md5(cache_name.encode()).hexdigest()
-            # 生成文件templateKey_cacheName存templateDetail
-            template_detail_filename = template_key + '_' + cache_key
-            template_info_filename = template_detail_filename + '.info'
-            data_info['cache_name'] = cache_name
-            cache.put(template_detail_filename, template_detail)
-            # 生成文件templateKey_cacheName.name,存草稿名、方向
-            cache.put(template_info_filename, data_info)
-            # 修改文件select_template,设置path和cacheName
-            cache.selected_template(template_path, cache_name)
-            return application.make_ok_response()
-        else:
-            return application.make_fail_response(f'保存草稿失败')
+
+        all_drafts = cache.get_draft_list(template_key)
+        for draft in all_drafts:
+            if draft.get('cacheName') == cache_name:
+                return application.make_fail_response('Duplicated draft name!')
+
+        draft_name = cache.get_filename(template_path, cache_name)
+        cache.put(draft_name, template_detail)
+        cache.put(f'{draft_name}{cache.DRAFT_INFO_FILE_SUFFIX}', {'cache_name': cache_name})
+        cache.selected_template(template_path, cache_name)
+        return application.make_ok_response()
+
     elif request.method == 'DELETE':
-        cache_key = request.json.get('delete_cache')
-        # 删除草稿内容文件 草稿信息文件
-        template_detail_filename = template_key + '_' + cache_key
-        template_info_filename = template_detail_filename + '.info'
-        if cache.delete(template_detail_filename) and cache.delete(template_info_filename):
-            return application.make_ok_response()
-        else:
-            return application.make_fail_response(f'草稿删除失败')
+        template_path = request.json.get('template_path')
+        if not template_path:
+            return application.make_fail_response('Missing required argument: template_path')
+
+        cache_name = request.json.get('cache_name')
+        if not cache_name:
+            return application.make_fail_response('Missing required argument: cache_name')
+
+        draft_name = cache.get_filename(template_path, cache_name)
+        cache.delete(draft_name)
+        cache.delete(f'{draft_name}{cache.DRAFT_INFO_FILE_SUFFIX}')
+        return application.make_ok_response()

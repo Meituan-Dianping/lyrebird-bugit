@@ -18,6 +18,7 @@ export default {
     shownFileName: null,
     submitLock: false,
     loadTemplate: false,
+    isShownDraftNameModal: false,
     shownFileContent: {
       code: null,
       type: null,
@@ -25,31 +26,34 @@ export default {
     }
   },
   mutations: {
-    setFormData(state, sourceData) {
+    setFormData (state, sourceData) {
       state.templateDetail[sourceData.index].value = sourceData.value
     },
-    setTemplates(state, templates) {
+    setTemplates (state, templates) {
       state.templates = templates
     },
-    setCacheList(state, cacheList) {
+    setCacheList (state, cacheList) {
       state.cacheList = cacheList
     },
-    setSelectedTemplateIndex(state, selectedTemplateIndex) {
+    setSelectedTemplateIndex (state, selectedTemplateIndex) {
       state.selectedTemplateIndex = selectedTemplateIndex
     },
-    setSelectedCache(state, selectedCache) {
+    setSelectedCache (state, selectedCache) {
       state.selectedCache = selectedCache
     },
-    setTemplateDetail(state, templateDetail) {
+    setTemplateDetail (state, templateDetail) {
       state.templateDetail = templateDetail
     },
-    setSubmitLock(state, isLock) {
+    setSubmitLock (state, isLock) {
       state.submitLock = isLock
     },
-    setLoadTemplate(state, isLoad) {
+    setLoadTemplate (state, isLoad) {
       state.loadTemplate = isLoad
     },
-    updateFormInfo(state, template) {
+    setIsShownDraftNameModal (state, isShownDraftNameModal) {
+      state.isShownDraftNameModal = isShownDraftNameModal
+    },
+    updateFormInfo (state, template) {
       for (let i in state.metadata) {
         if (state.metadata[i].key === template) {
           state.formInfo = state.metadata[i]
@@ -57,63 +61,63 @@ export default {
         }
       }
     },
-    updateRuleValidate(state, ruleValidate) {
+    updateRuleValidate (state, ruleValidate) {
       state.ruleValidate = ruleValidate
     },
-    updateFormValue(state, formValue) {
+    updateFormValue (state, formValue) {
       state.formValue = formValue
     },
-    deleteFormValue(state, formValue) {
+    deleteFormValue (state, formValue) {
       state.formValue = {}
     },
-    updateExtraMsg(state, msg) {
+    updateExtraMsg (state, msg) {
       state.templateDetail[msg.index].extraMsg = msg.value
     },
-    addExtraMsg(state, msg) {
+    addExtraMsg (state, msg) {
       let value = msg.value
       state.templateDetail[msg.index].extraMsg.push(value)
     },
-    deleteExtraMsg(state, indexes) {
+    deleteExtraMsg (state, indexes) {
       state.templateDetail[indexes.propsIndex].extraMsg.splice(indexes.index, 1)
     },
-    updateAttachmentsList(state, attachmentsList) {
+    updateAttachmentsList (state, attachmentsList) {
       state.attachmentsList = attachmentsList
     },
-    addAttachmentsList(state, attachment) {
+    addAttachmentsList (state, attachment) {
       state.attachmentsList.push(attachment)
     },
-    updateShownFileName(state, name) {
+    updateShownFileName (state, name) {
       state.shownFileName = name
     },
-    updateShownFileContent(state, fileInfo) {
+    updateShownFileContent (state, fileInfo) {
       state.shownFileContent = fileInfo
     },
-    deleteAttachment(state, index) {
+    deleteAttachment (state, index) {
       state.attachmentsList.splice(index, 1)
     },
-    addSnapshot(state, snapshot) {
+    addSnapshot (state, snapshot) {
       let fileName = 'snapshot_' + snapshot.id
       state.snapshotList.push({ 'name': fileName, 'eventObj': snapshot })
     },
-    deleteSnapshot(state, index) {
+    deleteSnapshot (state, index) {
       state.snapshotList.splice(index, 1)
     }
   },
   actions: {
-    loadTemplateList({ state, commit, dispatch }) {
+    loadTemplateList ({ commit, dispatch }) {
       api.getTemplate().then(response => {
         if (response.data.code === 1000) {
-          commit('setSelectedTemplateIndex', response.data.selected_index)
+          commit('setSelectedTemplateIndex', response.data.selected_template_index)
           commit('setTemplates', response.data.templates)
-          dispatch('updateSelectedCache', response.data.selected_cache)
+          commit('setSelectedCache', response.data.selected_cache)
+          commit('setCacheList', response.data.drafts)
           dispatch('loadTemplate')
-          dispatch('loadCacheList')
         } else {
           bus.$emit('msg.error', response.data.message)
         }
       })
     },
-    loadCacheList({ state, commit }) {
+    loadCacheList ({ state, commit }) {
       if (state.selectedTemplateIndex === null) {
         return
       }
@@ -121,18 +125,18 @@ export default {
       const md5 = crypto.createHash('md5')
       md5.update(selectedTemplate.path)
       const templateKey = md5.digest('hex')
-      api.getCache(templateKey).then(response => {
-        if (response.data.code === 1000) {
-          commit('setCacheList', response.data.data)
-        } else {
-          bus.$emit('msg.error', '加载失败')
-        }
-      }).catch(response => {
-        bus.$emit('msg.err', '未知原因失败')
-      })
+      api.getCache(templateKey)
+        .then(response => {
+          if (response.data.code === 1000) {
+            commit('setCacheList', response.data.data)
+          } else {
+            bus.$emit('msg.error', 'Load draft error: ' + response.data.message)
+          }
+        }).catch(error => {
+          bus.$emit('msg.error', 'Load draft error: ' + error)
+        })
     },
-
-    loadTemplate({ state, commit }) {
+    loadTemplate ({ state, commit }) {
       if (state.selectedTemplateIndex === null) {
         return
       }
@@ -142,24 +146,24 @@ export default {
       api.getTemplate(path, state.selectedCache).then(response => {
         commit('setTemplateDetail', response.data)
         commit('setLoadTemplate', false)
-      }).catch(response => {
-        bus.$emit('message','failed')
+      }).catch(error => {
+        bus.$emit('message', 'Load template detail error: ' + error)
         commit('setLoadTemplate', false)
       })
     },
-    updateSelectedTemplateIndex({ commit, dispatch, state }, selectedTemplateIndex) {
+    updateSelectedTemplateIndex ({ commit, dispatch, state }, selectedTemplateIndex) {
       commit('setSelectedTemplateIndex', selectedTemplateIndex)
-      commit('setSelectedCache',null)
+      commit('setSelectedCache', null)
       dispatch('loadCacheList')
       dispatch('loadTemplate')
     },
-    updateSelectedCache({ commit, dispatch, state }, selectedCache) {
-      if (selectedCache !== undefined) {
-        commit('setSelectedCache', selectedCache)
-        dispatch('loadTemplate')
-      }
-    },
-    setExtraMsgUpward({ state, commit }, indexes) {
+    // updateSelectedCache ({ commit, dispatch, state }, selectedCache) {
+    //   if (selectedCache !== undefined) {
+    //     commit('setSelectedCache', selectedCache)
+    //     dispatch('loadTemplate')
+    //   }
+    // },
+    setExtraMsgUpward ({ state, commit }, indexes) {
       let descFormEventbus = state.templateDetail[indexes.propsIndex].extraMsg
       let index = indexes.index
       let upDesc = descFormEventbus[index]
@@ -173,10 +177,10 @@ export default {
       }
       commit('updateExtraMsg', { index: indexes.propsIndex, value: newDescFormEventbus })
     },
-    saveEditedImage({ state, commit }, { id, imageData }) {
+    saveEditedImage ({ state, commit }, { id, imageData }) {
       api.saveImage(id, imageData)
     },
-    submit({ state, commit }) {
+    submit ({ state, commit }) {
       bus.$emit('message', 'Submitting issue ...')
       commit('setSubmitLock', true)
       api.createIssue(state.templates[state.selectedTemplateIndex], state.templateDetail,
@@ -189,7 +193,7 @@ export default {
           commit('setSubmitLock', false)
         })
     },
-    loadAttachment({ state, commit }) {
+    loadAttachment ({ state, commit }) {
       api.getAttachments().then(response => {
         commit('updateAttachmentsList', response.data)
         if (state.attachmentsList.length > 0 && state.loadAttachmentCount > 0) {
@@ -199,63 +203,48 @@ export default {
         state.loadAttachmentCount += 1
       })
     },
-    removeAttachment({ commit }, attachment) {
+    removeAttachment ({ commit }, attachment) {
       commit('deleteAttachment', attachment.index)
       api.removeAttachment(attachment.id)
     },
-    saveCache({ state, dispatch, commit }, cacheName) {
+    saveCache ({ state, dispatch, commit }, createName) {
+      if (!createName || createName.trim().length === 0) {
+        bus.$emit('msg.error', 'Draft name cannot be empty!')
+        return
+      }
       if (state.selectedTemplateIndex === null) {
         return
       }
-      const cache_name_list = []
-      for (var cache in state.cacheList) {
-        cache_name_list.push(state.cacheList[cache].cache_name)
-      }
-      if (cache_name_list.indexOf(cacheName) != -1) {
-        bus.$emit('msg.error', '草稿重名！')
-        return 
-      }
-      const selectedTemplate = state.templates[state.selectedTemplateIndex]
-      const md5 = crypto.createHash('md5')
-      md5.update(selectedTemplate.path)
-      const templateKey = md5.digest('hex')
-      api.setCache(selectedTemplate.path, templateKey, state.templateDetail, state.selectedCache).then(response => {
-        if (response.data.code === 1000) {
-          bus.$emit('msg.success', 'Save as draft, success')
-          commit('setSelectedCache', state.selectedCache)
-          dispatch('loadTemplate')
-          dispatch('loadCacheList')
-        } else {
-          bus.$emit('msg.error', 'Save draft failed: ' + response.message)
-        }
-      }).catch(response => {
-        bus.$emit('msg.error', 'Can\'t save as draft')
-        console.error('Can\'t save as draft', response)
-      })
+      const template = state.templates[state.selectedTemplateIndex]
+      api.setCache(template.id, template.path, createName, state.templateDetail)
+        .then(response => {
+          if (response.data.code === 1000) {
+            bus.$emit('msg.success', 'Save as draft, success')
+            commit('setSelectedCache', createName)
+            dispatch('loadTemplate')
+            dispatch('loadCacheList')
+            commit('setIsShownDraftNameModal', false)
+          } else {
+            bus.$emit('msg.error', 'Save draft error: ' + response.data.message)
+          }
+        }).catch(response => {
+          bus.$emit('msg.error', 'Save draft error:' + response)
+        })
     },
-
-    deleteCache({ state, dispatch, commit }, delete_cache) {
-      const selectedTemplate = state.templates[state.selectedTemplateIndex]
-      const md5 = crypto.createHash('md5')
-      const md5_cache = crypto.createHash('md5')
-      md5_cache.update(delete_cache)
-      md5.update(selectedTemplate.path)
-      const templateKey = md5.digest('hex')
-      const deleteCacheKey = md5_cache.digest('hex')
-      if (delete_cache === state.selectedCache) {
-        commit('setSelectedCache', null)
-      }
-      api.deleteCache(templateKey, deleteCacheKey).then(response => {
-        if (response.data.code === 1000) {
-          bus.$emit('msg.success', 'Delete success')
-          dispatch('loadCacheList')
-        } else {
-          bus.$emit('msg.error', 'Delete failed: ' + response.data.message)
-        }
-      }).catch(response => {
-        bus.$emit('msg.error', 'Can\'t delete')
-        console.error('Can\'t delete', response)
-      })
+    deleteCache ({ state, dispatch, commit }, draftName) {
+      const template = state.templates[state.selectedTemplateIndex]
+      api.deleteCache(template.id, template.path, draftName)
+        .then(response => {
+          if (response.data.code === 1000) {
+            bus.$emit('msg.success', 'Delete success!')
+            commit('setSelectedCache', state.selectedCache)
+            dispatch('loadCacheList')
+          } else {
+            bus.$emit('msg.error', 'Delete failed error: ' + response.data.message)
+          }
+        }).catch(error => {
+          bus.$emit('msg.error', 'Delete failed error: ' + error)
+        })
     }
   }
 }

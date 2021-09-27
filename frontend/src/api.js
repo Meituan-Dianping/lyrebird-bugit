@@ -2,13 +2,13 @@ import axios from 'axios'
 
 const API_PREFIX = '/plugins/bugit/api'
 
-export const getTemplate = (path, cache_name) => {
+export const getTemplate = (path, cacheName) => {
   let url = API_PREFIX + '/template'
   if (path) {
     return axios({
       url: url,
       method: 'POST',
-      data: { path, cache_name }
+      data: { path, cache_name: cacheName }
     })
   } else {
     return axios({
@@ -22,7 +22,8 @@ export const getDevices = () => {
     url: API_PREFIX + '/device'
   })
 }
-//------EventInspector------
+
+// ------EventInspector------
 
 export const getEvent = (options) => {
   let url = '/api/event'
@@ -91,30 +92,31 @@ export const removeAttachment = (id) => {
   })
 }
 
-export const getCache = (template_key) => {
+export const getCache = (key) => {
   return axios({
-    url: API_PREFIX + '/cache/' + template_key
+    url: API_PREFIX + '/cache/' + key
   })
 }
 
-
-export const setCache = (template_path,template_key, template_detail, cache_name) => {
+export const setCache = (key, templatePath, cacheName, data) => {
   return axios({
-    url: API_PREFIX + '/cache/' + template_key,
+    url: API_PREFIX + '/cache/' + key,
     method: 'POST',
     data: {
-      templatePath: template_path,
-      templateDetail: template_detail,
-      cache_name: cache_name
+      template_path: templatePath,
+      cache_name: cacheName,
+      data
     }
   })
 }
 
-export const deleteCache = (selected_template, delete_cache) => {
+export const deleteCache = (key, templatePath, cacheName) => {
   return axios({
-    url: API_PREFIX + '/cache/' + selected_template,
+    url: API_PREFIX + '/cache/' + key,
     method: 'DELETE',
-    data: { delete_cache }
+    data: {
+      cache_name: cacheName,
+      template_path: templatePath
+    }
   })
 }
-

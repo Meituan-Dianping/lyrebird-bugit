@@ -13,10 +13,10 @@
 export default {
   props: ['data', 'index'],
   methods: {
-    deleteAttach(data) {
-      this.$store.commit('deleteSnapshot', this.index )
+    deleteAttach (data) {
+      this.$store.commit('deleteSnapshot', this.index)
     },
-    displayAttach(data) {
+    displayAttach (data) {
       this.$bus.$emit('displayAttach', data)
     }
   }

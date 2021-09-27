@@ -6,112 +6,110 @@
           <Select
             v-model="selectedTemplateIndex"
             filterable
+            clearable
             size="small"
             placeholder="Select template"
+            not-found-text="No saved draft"
           >
-            <Option
-              v-for="(template, index) in templates"
-              :value="index"
-              :key="index"
-              >{{ template.name }}</Option
-            >
+            <Option v-for="(template, index) in templates" :value="index" :key="index">{{ template.name }}</Option>
           </Select>
         </FormItem>
       </i-col>
       <i-col span="12">
-        <FormItem label="draft">
+        <FormItem label="Draft">
           <Select
             v-model="selectedDraft"
+            filterable
+            clearable
             size="small"
-            placeholder="Select draft"
+            placeholder="Select a saved draft"
+            not-found-text="No Template"
           >
             <Option
               v-for="(template, index) in cacheList"
-              :value="template.cache_name"
+              :value="template.cacheName"
               :key="index"
-              >{{ template.cache_name
-              }}<Icon
-                v-if="template.cache_name==selectedCache"
+            >{{template.cacheName}}<Icon
+                v-show="template.cacheName===selectedCache"
                 class="icon-form"
                 style="float: right"
                 type="md-trash"
-                @click="deleteDraft(template.cache_name)"
-            /></Option>
+                @click="deleteDraft(template.cacheName)"
+              />
+            </Option>
           </Select>
-          <Modal v-model="shownDeleteModal">
-            <p slot="header" style="color: #f60; text-align: center">
-              <Icon type="ios-information-circle"></Icon>
-              <span>Delete confirmation</span>
-            </p>
-            <div style="text-align: center">
-              <span style="font-size: 14px">
-                Are you sure you want to delete {{selectedCache}}?</span
-              >
-            </div>
-            <div slot="footer">
-              <Button type="error" size="large" @click="onDelete()"
-                >Delete</Button
-              >
-            </div>
-          </Modal>
         </FormItem>
       </i-col>
     </Row>
+    <Modal v-model="shownDeleteModal">
+      <p slot="header" style="color: #f60; text-align: center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>Delete confirmation</span>
+      </p>
+      <div style="text-align: center">
+        <span style="font-size: 14px">
+          Are you sure you want to delete draft <b>{{selectedCache}}</b>?
+        </span>
+      </div>
+      <div slot="footer">
+        <Button type="error" long @click="onDelete">Delete</Button>
+      </div>
+    </Modal>
   </Form>
 </template>
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       shownDeleteModal: false,
-      targetDeleteCache: null,
-    };
-  },
-  created() {
-    this.$store.dispatch("loadTemplateList");
-  },
-  methods: {
-    deleteDraft(template) {
-      this.targetDeleteCache = template
-      this.shownDeleteModal = true;
-    },
-    onDelete() {
-      this.shownDeleteModal = false;
-      this.$store.dispatch('deleteCache', this.targetDeleteCache)
-    },
-  },
-  computed: {
-    templates() {
-      return this.$store.state.form.templates;
-    },
-    selectedCache() {
-      return this.$store.state.form.selectedCache;
-    },
-    cacheList() {
-      return this.$store.state.form.cacheList;
-    },
-    selectedTemplateIndex: {
-      get() {
-        return this.$store.state.form.selectedTemplateIndex;
-      },
-      set(val) {
-        this.$store.dispatch("updateSelectedTemplateIndex", val);
-      },
-    },
-    selectedDraft: {
-      get() {
-        return this.$store.state.form.selectedCache;
-      },
-      set(val) {
-        if (val !== undefined) {
-          this.$store.commit("setSelectedCache", val);
-          this.$store.dispatch("loadTemplate");
-        }
-      },
+      targetDraft: null
     }
   },
-};
+  created () {
+    this.$store.dispatch('loadTemplateList')
+  },
+  methods: {
+    deleteDraft (cacheName) {
+      this.targetDraft = cacheName
+      this.shownDeleteModal = true
+    },
+    onDelete () {
+      this.shownDeleteModal = false
+      this.$store.dispatch('deleteCache', this.targetDraft)
+    }
+  },
+  computed: {
+    templates () {
+      return this.$store.state.form.templates
+    },
+    selectedCache () {
+      return this.$store.state.form.selectedCache
+    },
+    cacheList () {
+      return this.$store.state.form.cacheList
+    },
+    selectedTemplateIndex: {
+      get () {
+        return this.$store.state.form.selectedTemplateIndex
+      },
+      set (val) {
+        this.$store.dispatch('updateSelectedTemplateIndex', val)
+      }
+    },
+    selectedDraft: {
+      get () {
+        return this.$store.state.form.selectedCache
+      },
+      set (val) {
+        if (val !== undefined) {
+          this.$store.commit('setSelectedCache', val)
+          this.$store.dispatch('loadTemplate')
+        }
+      }
+    }
+  }
+}
 </script>
 
 <style scoped>
