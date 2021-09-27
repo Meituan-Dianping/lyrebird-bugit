@@ -161,12 +161,6 @@ export default {
       dispatch('loadCacheList')
       dispatch('loadTemplate')
     },
-    // updateSelectedCache ({ commit, dispatch, state }, selectedCache) {
-    //   if (selectedCache !== undefined) {
-    //     commit('setSelectedCache', selectedCache)
-    //     dispatch('loadTemplate')
-    //   }
-    // },
     setExtraMsgUpward ({ state, commit }, indexes) {
       let descFormEventbus = state.templateDetail[indexes.propsIndex].extraMsg
       let index = indexes.index
@@ -223,11 +217,11 @@ export default {
       api.setCache(template.id, template.path, state.createName, state.templateDetail)
         .then(response => {
           if (response.data.code === 1000) {
-            bus.$emit('msg.success', 'Save as draft, success')
+            bus.$emit('msg.success', 'Save as draft ' + state.createName + ', success')
             commit('setSelectedCache', state.createName)
+            commit('setShownDraftNameModal', false)
             dispatch('loadTemplate')
             dispatch('loadCacheList')
-            commit('setShownDraftNameModal', false)
           } else {
             bus.$emit('msg.error', 'Save draft error: ' + response.data.message)
           }

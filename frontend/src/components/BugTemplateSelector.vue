@@ -63,7 +63,7 @@ export default {
   data () {
     return {
       shownDeleteModal: false,
-      targetDraft: null
+      deleteDraftName: null
     }
   },
   created () {
@@ -71,11 +71,11 @@ export default {
   },
   methods: {
     deleteDraft (cacheName) {
-      this.targetDraft = cacheName
+      this.deleteDraftName = cacheName
       this.shownDeleteModal = true
     },
     onDelete () {
-      this.$store.dispatch('deleteCache', this.targetDraft)
+      this.$store.dispatch('deleteCache', this.deleteDraftName)
       this.shownDeleteModal = false
     }
   },
@@ -120,8 +120,5 @@ export default {
 .split-left-template-selector .ivu-form-item {
   margin-bottom: 0px;
   padding-bottom: 5px;
-}
-.input-dropdown {
-  height: 18px;
 }
 </style>
