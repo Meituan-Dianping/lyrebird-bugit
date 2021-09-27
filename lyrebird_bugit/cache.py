@@ -4,10 +4,9 @@ import lyrebird
 from hashlib import md5
 from pathlib import Path
 from packaging import version
-from lyrebird import log
 
 
-logger = log.get_logger()
+logger = lyrebird.log.get_logger()
 
 BUGIT_STORAGE = lyrebird.get_plugin_storage()
 CACHE_ROOT = Path(BUGIT_STORAGE)/'cache'
