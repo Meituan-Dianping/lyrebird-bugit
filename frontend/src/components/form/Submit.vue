@@ -13,17 +13,14 @@
       </i-col>
       <i-col span="6">
         <Tooltip content="Save (⌘+s)" placement="top" :delay="500">
-          <Button @click="isShownDraftNameModal = true" long type="info">
+          <Button @click="shownDraftNameModal = true" long type="info">
             <span>
               <b>Draft</b>
             </span>
           </Button>
         </Tooltip>
       </i-col>
-      <Modal
-        v-model="isShownDraftNameModal"
-        title="Create Draft"
-      >
+      <Modal v-model="shownDraftNameModal" title="Create Draft">
         <Row>
           <i-col span="3" align="right">
             <span>Name:</span>
@@ -44,16 +41,9 @@
 export default {
   data () {
     return {
-      // enterCacheName: false,
-      shownDraftNameModal: false,
       shownDeleteModal: false,
-      createName: 'Default',
       targetDeleteName: null
     }
-  },
-  mounted () {
-    document.addEventListener('keydown', this.onKeyDown)
-    document.addEventListener('keyup', this.onKeyUp)
   },
   computed: {
     showDrop () {
@@ -68,12 +58,20 @@ export default {
     submitLock () {
       return this.$store.state.form.submitLock
     },
-    isShownDraftNameModal: {
+    shownDraftNameModal: {
       get () {
-        return this.$store.state.form.isShownDraftNameModal
+        return this.$store.state.form.shownDraftNameModal
       },
       set (val) {
-        this.$store.commit('setIsShownDraftNameModal', val)
+        this.$store.commit('setShownDraftNameModal', val)
+      }
+    },
+    createName: {
+      get () {
+        return this.$store.state.form.createName
+      },
+      set (val) {
+        this.$store.commit('setCreateName', val)
       }
     }
   },
@@ -82,29 +80,10 @@ export default {
       this.$store.dispatch('submit')
     },
     onSave () {
-      this.$store.dispatch('saveCache', this.createName)
+      this.$store.dispatch('saveCache')
     },
     selectCacheName (name) {
       this.$store.dispatch('loadTemplate', name)
-    },
-    deleleDraft (template) {
-      this.targetDeleteName = template.name
-      this.shownDeleteModal = true
-    },
-    onKeyDown (event) {
-      if (event.key === 'Meta') {
-        this.metaKey = true
-      } else if (event.key === 's') {
-        if (this.metaKey) {
-          window.event.preventDefault()
-          this.isShownDraftNameModal = true
-        }
-      }
-    },
-    onKeyUp (event) {
-      if (event.key === 'Meta') {
-        this.metaKey = false
-      }
     }
   }
 }

@@ -43,7 +43,7 @@
     </Row>
     <Modal v-model="shownDeleteModal">
       <p slot="header" style="color: #f60; text-align: center">
-        <Icon type="ios-information-circle"></Icon>
+        <Icon type="ios-information-circle"/>
         <span>Delete confirmation</span>
       </p>
       <div style="text-align: center">
@@ -75,8 +75,8 @@ export default {
       this.shownDeleteModal = true
     },
     onDelete () {
-      this.shownDeleteModal = false
       this.$store.dispatch('deleteCache', this.targetDraft)
+      this.shownDeleteModal = false
     }
   },
   computed: {

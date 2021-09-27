@@ -18,7 +18,8 @@ export default {
     shownFileName: null,
     submitLock: false,
     loadTemplate: false,
-    isShownDraftNameModal: false,
+    shownDraftNameModal: false,
+    createName: 'Default',
     shownFileContent: {
       code: null,
       type: null,
@@ -50,8 +51,11 @@ export default {
     setLoadTemplate (state, isLoad) {
       state.loadTemplate = isLoad
     },
-    setIsShownDraftNameModal (state, isShownDraftNameModal) {
-      state.isShownDraftNameModal = isShownDraftNameModal
+    setShownDraftNameModal (state, shownDraftNameModal) {
+      state.shownDraftNameModal = shownDraftNameModal
+    },
+    setCreateName (state, createName) {
+      state.createName = createName
     },
     updateFormInfo (state, template) {
       for (let i in state.metadata) {
@@ -207,8 +211,8 @@ export default {
       commit('deleteAttachment', attachment.index)
       api.removeAttachment(attachment.id)
     },
-    saveCache ({ state, dispatch, commit }, createName) {
-      if (!createName || createName.trim().length === 0) {
+    saveCache ({ state, dispatch, commit }) {
+      if (!state.createName || state.createName.trim().length === 0) {
         bus.$emit('msg.error', 'Draft name cannot be empty!')
         return
       }
@@ -216,14 +220,14 @@ export default {
         return
       }
       const template = state.templates[state.selectedTemplateIndex]
-      api.setCache(template.id, template.path, createName, state.templateDetail)
+      api.setCache(template.id, template.path, state.createName, state.templateDetail)
         .then(response => {
           if (response.data.code === 1000) {
             bus.$emit('msg.success', 'Save as draft, success')
-            commit('setSelectedCache', createName)
+            commit('setSelectedCache', state.createName)
             dispatch('loadTemplate')
             dispatch('loadCacheList')
-            commit('setIsShownDraftNameModal', false)
+            commit('setShownDraftNameModal', false)
           } else {
             bus.$emit('msg.error', 'Save draft error: ' + response.data.message)
           }
