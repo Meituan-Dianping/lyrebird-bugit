@@ -33,14 +33,14 @@
                 class="icon-form"
                 style="float: right"
                 type="md-trash"
-                @click="deleteDraft(template.cacheName)"
+                @click="isShownDeleteModal = true"
               />
             </Option>
           </Select>
         </FormItem>
       </i-col>
     </Row>
-    <Modal v-model="shownDeleteModal">
+    <Modal v-model="isShownDeleteModal">
       <p slot="header" style="color: #f60; text-align: center">
         <Icon type="ios-information-circle"/>
         <span>Delete confirmation</span>
@@ -61,19 +61,16 @@
 export default {
   data () {
     return {
-      shownDeleteModal: false
+      isShownDeleteModal: false
     }
   },
   created () {
     this.$store.dispatch('loadTemplateList')
   },
   methods: {
-    deleteDraft (cacheName) {
-      this.shownDeleteModal = true
-    },
     onDelete () {
       this.$store.dispatch('deleteCache', this.selectedCache)
-      this.shownDeleteModal = false
+      this.isShownDeleteModal = false
     }
   },
   computed: {
