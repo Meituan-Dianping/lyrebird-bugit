@@ -46,12 +46,13 @@ export default {
     onKeyDown (event) {
       if (event.key === 'Meta') {
         this.metaKey = true
-      }
-      else if (event.key == 's') {
+      } else if (event.key === 's') {
         if (this.metaKey) {
           window.event.preventDefault()
-          this.$store.dispatch('saveCache')
+          this.$store.commit('setShownDraftNameModal', true)
         }
+      } else if (event.key === 'Enter' && this.$store.state.form.shownDraftNameModal) {
+        this.$store.dispatch('saveCache')
       }
     },
     onKeyUp (event) {

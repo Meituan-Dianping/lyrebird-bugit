@@ -1,11 +1,12 @@
 import * as api from '@/api'
 import { bus } from '@/eventbus'
-import crypto from 'crypto'
 
 export default {
   state: {
     templates: [],
+    cacheList: [],
     selectedTemplateIndex: null,
+    selectedCache: null,
     templateDetail: null,
     formInfo: null,
     ruleValidate: null,
@@ -16,6 +17,8 @@ export default {
     shownFileName: null,
     submitLock: false,
     loadTemplate: false,
+    shownDraftNameModal: false,
+    createName: 'Default',
     shownFileContent: {
       code: null,
       type: null,
@@ -29,8 +32,14 @@ export default {
     setTemplates (state, templates) {
       state.templates = templates
     },
+    setCacheList (state, cacheList) {
+      state.cacheList = cacheList
+    },
     setSelectedTemplateIndex (state, selectedTemplateIndex) {
       state.selectedTemplateIndex = selectedTemplateIndex
+    },
+    setSelectedCache (state, selectedCache) {
+      state.selectedCache = selectedCache
     },
     setTemplateDetail (state, templateDetail) {
       state.templateDetail = templateDetail
@@ -40,6 +49,12 @@ export default {
     },
     setLoadTemplate (state, isLoad) {
       state.loadTemplate = isLoad
+    },
+    setShownDraftNameModal (state, shownDraftNameModal) {
+      state.shownDraftNameModal = shownDraftNameModal
+    },
+    setCreateName (state, createName) {
+      state.createName = createName
     },
     updateFormInfo (state, template) {
       for (let i in state.metadata) {
@@ -95,13 +110,31 @@ export default {
     loadTemplateList ({ commit, dispatch }) {
       api.getTemplate().then(response => {
         if (response.data.code === 1000) {
-          commit('setSelectedTemplateIndex', response.data.selected_index)
+          commit('setSelectedTemplateIndex', response.data.selected_template_index)
           commit('setTemplates', response.data.templates)
+          commit('setSelectedCache', response.data.selected_cache)
+          commit('setCacheList', response.data.drafts)
           dispatch('loadTemplate')
         } else {
           bus.$emit('msg.error', response.data.message)
         }
       })
+    },
+    loadCacheList ({ state, commit }) {
+      if (state.selectedTemplateIndex === null) {
+        return
+      }
+      const selectedTemplate = state.templates[state.selectedTemplateIndex]
+      api.getCache(selectedTemplate.id)
+        .then(response => {
+          if (response.data.code === 1000) {
+            commit('setCacheList', response.data.data)
+          } else {
+            bus.$emit('msg.error', 'Load draft error: ' + response.data.message)
+          }
+        }).catch(error => {
+          bus.$emit('msg.error', 'Load draft error: ' + error)
+        })
     },
     loadTemplate ({ state, commit }) {
       if (state.selectedTemplateIndex === null) {
@@ -110,16 +143,18 @@ export default {
       const path = state.templates[state.selectedTemplateIndex].path
       commit('setTemplateDetail', [])
       commit('setLoadTemplate', true)
-      api.getTemplate(path).then(response => {
+      api.getTemplate(path, state.selectedCache).then(response => {
         commit('setTemplateDetail', response.data)
         commit('setLoadTemplate', false)
-      }).catch(response => {
-        bus.$emit('message', response.data)
+      }).catch(error => {
+        bus.$emit('message', 'Load template detail error: ' + error)
         commit('setLoadTemplate', false)
       })
     },
-    updateSelectedTemplateIndex ({ commit, dispatch }, selectedTemplateIndex) {
+    updateSelectedTemplateIndex ({ commit, dispatch, state }, selectedTemplateIndex) {
       commit('setSelectedTemplateIndex', selectedTemplateIndex)
+      commit('setSelectedCache', null)
+      dispatch('loadCacheList')
       dispatch('loadTemplate')
     },
     setExtraMsgUpward ({ state, commit }, indexes) {
@@ -166,24 +201,44 @@ export default {
       commit('deleteAttachment', attachment.index)
       api.removeAttachment(attachment.id)
     },
-    saveCache ({ state }) {
+    saveCache ({ state, dispatch, commit }) {
+      if (!state.createName || state.createName.trim().length === 0) {
+        bus.$emit('msg.error', 'Draft name should not be empty!')
+        return
+      }
       if (state.selectedTemplateIndex === null) {
         return
       }
-      const selectedTemplate = state.templates[state.selectedTemplateIndex]
-      const md5 = crypto.createHash('md5')
-      md5.update(selectedTemplate.path)
-      const templateKey = md5.digest('hex')
-      api.setCache(templateKey, state.templateDetail).then(response => {
-        if (response.data.code === 1000) {
-          bus.$emit('msg.success', 'Save as draft, success')
-        } else {
-          bus.$emit('msg.error', 'Save draft failed: ' + response.message)
-        }
-      }).catch(response => {
-        bus.$emit('msg.error', 'Can\'t save as draft')
-        console.error('Can\'t save as draft', response)
-      })
+      const template = state.templates[state.selectedTemplateIndex]
+      api.setCache(template.id, template.path, state.createName, state.templateDetail)
+        .then(response => {
+          if (response.data.code === 1000) {
+            bus.$emit('msg.success', 'Save as draft ' + state.createName + ', success')
+            commit('setSelectedCache', state.createName)
+            commit('setShownDraftNameModal', false)
+            dispatch('loadTemplate')
+            dispatch('loadCacheList')
+          } else {
+            bus.$emit('msg.error', 'Save draft error: ' + response.data.message)
+          }
+        }).catch(response => {
+          bus.$emit('msg.error', 'Save draft error:' + response)
+        })
+    },
+    deleteCache ({ state, dispatch, commit }, draftName) {
+      const template = state.templates[state.selectedTemplateIndex]
+      api.deleteCache(template.id, template.path, draftName)
+        .then(response => {
+          if (response.data.code === 1000) {
+            bus.$emit('msg.success', 'Delete success!')
+            commit('setSelectedCache', state.selectedCache)
+            dispatch('loadCacheList')
+          } else {
+            bus.$emit('msg.error', 'Delete failed error: ' + response.data.message)
+          }
+        }).catch(error => {
+          bus.$emit('msg.error', 'Delete failed error: ' + error)
+        })
     }
   }
 }

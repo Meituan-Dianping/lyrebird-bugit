@@ -1,28 +1,105 @@
 <template>
   <Form :label-width="80" class="split-left-template-selector">
-    <FormItem label="template">
-      <Select v-model="selectedTemplateIndex" filterable size="small" placeholder="Select template">
-        <Option v-for="(template, index) in templates" :value="index" :key="index">{{template.name}}</Option>
-      </Select>
-    </FormItem>
+    <Row>
+      <i-col span="12">
+        <FormItem label="template">
+          <Select
+            v-model="selectedTemplateIndex"
+            filterable
+            size="small"
+            placeholder="Select template"
+            not-found-text="No saved draft"
+          >
+            <Option v-for="(template, index) in templates" :value="index" :key="index">{{ template.name }}</Option>
+          </Select>
+        </FormItem>
+      </i-col>
+      <i-col span="12">
+        <FormItem label="Draft">
+          <Select
+            v-model="selectedDraft"
+            filterable
+            clearable
+            size="small"
+            placeholder="Select a saved draft"
+            not-found-text="No Template"
+          >
+            <Option
+              v-for="(template, index) in cacheList"
+              :value="template.cacheName"
+              :key="index"
+            >{{template.cacheName}}<Icon
+                v-show="template.cacheName===selectedCache"
+                class="icon-form"
+                style="float: right"
+                type="md-trash"
+                @click="isShownDeleteModal = true"
+              />
+            </Option>
+          </Select>
+        </FormItem>
+      </i-col>
+    </Row>
+    <Modal v-model="isShownDeleteModal">
+      <p slot="header" style="color: #f60; text-align: center">
+        <Icon type="ios-information-circle"/>
+        <span>Delete confirmation</span>
+      </p>
+      <div style="text-align: center">
+        <span style="font-size: 14px">
+          Are you sure you want to delete draft <b>{{selectedCache}}</b>?
+        </span>
+      </div>
+      <div slot="footer">
+        <Button type="error" long @click="onDelete">Delete</Button>
+      </div>
+    </Modal>
   </Form>
 </template>
 
 <script>
 export default {
-  created() {
+  data () {
+    return {
+      isShownDeleteModal: false
+    }
+  },
+  created () {
     this.$store.dispatch('loadTemplateList')
   },
+  methods: {
+    onDelete () {
+      this.$store.dispatch('deleteCache', this.selectedCache)
+      this.isShownDeleteModal = false
+    }
+  },
   computed: {
-    templates() {
+    templates () {
       return this.$store.state.form.templates
     },
+    selectedCache () {
+      return this.$store.state.form.selectedCache
+    },
+    cacheList () {
+      return this.$store.state.form.cacheList
+    },
     selectedTemplateIndex: {
-      get() {
+      get () {
         return this.$store.state.form.selectedTemplateIndex
       },
-      set(val) {
+      set (val) {
         this.$store.dispatch('updateSelectedTemplateIndex', val)
+      }
+    },
+    selectedDraft: {
+      get () {
+        return this.$store.state.form.selectedCache
+      },
+      set (val) {
+        if (val !== undefined) {
+          this.$store.commit('setSelectedCache', val)
+          this.$store.dispatch('loadTemplate')
+        }
       }
     }
   }

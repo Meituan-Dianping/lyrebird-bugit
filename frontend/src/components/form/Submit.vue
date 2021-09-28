@@ -13,30 +13,62 @@
       </i-col>
       <i-col span="6">
         <Tooltip content="Save (⌘+s)" placement="top" :delay="500">
-          <Button @click="onSave" long type="info">
+          <Button @click="shownDraftNameModal = true" long type="info">
             <span>
               <b>Draft</b>
             </span>
           </Button>
         </Tooltip>
       </i-col>
+      <Modal v-model="shownDraftNameModal" title="Create Draft">
+        <Row>
+          <i-col span="3" align="right">
+            <span>Name:</span>
+          </i-col>
+          <i-col span="18" offset="1">
+            <Input v-model="createName" clearable size="small" />
+          </i-col>
+        </Row>
+        <div slot="footer">
+          <Button type="primary" long @click="onSave">Save</Button>
+        </div>
+      </Modal>
     </Row>
   </div>
 </template>
 
 <script>
 export default {
+  computed: {
+    submitLock () {
+      return this.$store.state.form.submitLock
+    },
+    shownDraftNameModal: {
+      get () {
+        return this.$store.state.form.shownDraftNameModal
+      },
+      set (val) {
+        this.$store.commit('setShownDraftNameModal', val)
+      }
+    },
+    createName: {
+      get () {
+        return this.$store.state.form.createName
+      },
+      set (val) {
+        this.$store.commit('setCreateName', val)
+      }
+    }
+  },
   methods: {
     onSubmit () {
       this.$store.dispatch('submit')
     },
     onSave () {
       this.$store.dispatch('saveCache')
-    }
-  },
-  computed: {
-    submitLock () {
-      return this.$store.state.form.submitLock
+    },
+    selectCacheName (name) {
+      this.$store.dispatch('loadTemplate', name)
     }
   }
 }
@@ -44,7 +76,7 @@ export default {
 
 <style scoped>
 .ivu-tooltip {
-    display: inline-block;
-    width: 100%;
+  display: inline-block;
+  width: 100%;
 }
 </style>
