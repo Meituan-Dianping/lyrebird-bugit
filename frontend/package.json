@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@toast-ui/vue-image-editor": "^1.0.2",
-    "axios": "^0.18.0",
+    "axios": "^0.21.2",
     "crypto": "^1.0.1",
     "monaco-editor": "^0.26.1",
     "socket.io-client": "^2.2.0",
