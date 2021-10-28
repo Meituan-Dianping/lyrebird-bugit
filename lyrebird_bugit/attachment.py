@@ -21,7 +21,8 @@ def export_snapshot(snapshot):
     # SnapshotId is unique id of snapshot
     id_ = res.headers.get('SnapshotId')
     with codecs.open(str(ATTACHMENT_ROOT / snapshot['name'])+'.lb', 'wb') as f:
-        f.write(file_content)
+        for chunck in res.iter_content():
+            f.write(chunck)
     return {
         'id': id_,
         'name': snapshot['name']+'.lb',
