@@ -201,9 +201,6 @@ def ui_cache(template_key):
                 del field['extraMsg']
 
         all_drafts = cache.get_draft_list(template_key)
-        for draft in all_drafts:
-            if draft.get('cacheName') == cache_name:
-                return application.make_fail_response('Duplicated draft name!')
 
         draft_name = cache.get_filename(template_path, cache_name)
         cache.put(draft_name, template_detail)
