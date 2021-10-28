@@ -17,7 +17,6 @@ def _check_dir():
 def export_snapshot(snapshot):
     _check_dir()
     res = requests.post(EXPORT_URL, json=snapshot['eventObj'], stream=True)
-    file_content = res.content
     # SnapshotId is unique id of snapshot
     id_ = res.headers.get('SnapshotId')
     with codecs.open(str(ATTACHMENT_ROOT / snapshot['name'])+'.lb', 'wb') as f:

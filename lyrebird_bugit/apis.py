@@ -200,8 +200,6 @@ def ui_cache(template_key):
             if 'extraMsg' in field:
                 del field['extraMsg']
 
-        all_drafts = cache.get_draft_list(template_key)
-
         draft_name = cache.get_filename(template_path, cache_name)
         cache.put(draft_name, template_detail)
         cache.put(f'{draft_name}{cache.DRAFT_INFO_FILE_SUFFIX}', {'cache_name': cache_name})
