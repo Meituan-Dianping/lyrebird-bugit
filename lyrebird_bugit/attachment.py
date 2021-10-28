@@ -16,11 +16,17 @@ def _check_dir():
 
 def export_snapshot(snapshot):
     _check_dir()
-    file_content = requests.post(EXPORT_URL,json=snapshot['eventObj'],stream=True).content
+    res = requests.post(EXPORT_URL, json=snapshot['eventObj'], stream=True)
+    # SnapshotId is unique id of snapshot
+    id_ = res.headers.get('SnapshotId')
     with codecs.open(str(ATTACHMENT_ROOT / snapshot['name'])+'.lb', 'wb') as f:
-        f.write(file_content)
-    return {'id':snapshot['eventObj']['id'],'name':snapshot['name']+'.lb',
-    'path':str(ATTACHMENT_ROOT / snapshot['name'])+'.lb'}
+        for chunck in res.iter_content():
+            f.write(chunck)
+    return {
+        'id': id_,
+        'name': snapshot['name']+'.lb',
+        'path': str(ATTACHMENT_ROOT / snapshot['name'])+'.lb',
+    }
 
 def remove_attach():
     if not ATTACHMENT_ROOT.exists():
