@@ -21,7 +21,7 @@ export default {
   computed: {
     bgColor () {
       if (this.channel === 'flow') {
-        return '#0fccbf'
+        return '#5F5CCA'
       } else if (this.channel === 'notice') {
         return '#ff9900'
       } else if (this.channel === 'snapshot') {
@@ -30,6 +30,6 @@ export default {
         return '#808695'
       }
     }
-  },
+  }
 }
 </script>

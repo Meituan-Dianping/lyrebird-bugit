@@ -49,7 +49,7 @@ export default {
       } else if (event.key === 's') {
         if (this.metaKey) {
           window.event.preventDefault()
-          this.$store.commit('setShownDraftNameModal', true)
+          this.$store.dispatch('saveCache')
         }
       } else if (event.key === 'Enter' && this.$store.state.form.shownDraftNameModal) {
         this.$store.dispatch('saveCache')

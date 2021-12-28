@@ -13,7 +13,7 @@
       </i-col>
       <i-col span="6">
         <Tooltip content="Save (⌘+s)" placement="top" :delay="500">
-          <Button @click="shownDraftNameModal = true" long type="info">
+          <Button @click="onSave" long type="info">
             <span>
               <b>Draft</b>
             </span>
