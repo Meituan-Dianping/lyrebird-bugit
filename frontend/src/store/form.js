@@ -213,7 +213,7 @@ export default {
       api.setCache(template.id, template.path, state.createName, state.templateDetail)
         .then(response => {
           if (response.data.code === 1000) {
-            bus.$emit('msg.success', 'Save as draft ' + state.createName + ', success')
+            bus.$emit('msg.success', 'Save draft ' + state.createName + ' success!')
             commit('setSelectedCache', state.createName)
             commit('setShownDraftNameModal', false)
             dispatch('loadTemplate')

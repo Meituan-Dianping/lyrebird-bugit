@@ -109,7 +109,7 @@ export default {
 <style scoped>
 .split-left-template-selector {
   padding-right: 10px;
-  background-color: #f8f8f9;
+  background-color: #ffffff;
 }
 .split-left-template-selector .ivu-form-item {
   margin-bottom: 0px;
