@@ -1,5 +1,3 @@
-import imp
-import json
 import base64
 import codecs
 import inspect
@@ -12,11 +10,13 @@ from lyrebird.mock.context import make_fail_response, make_ok_response
 from . import event_handler
 from . import template_loader
 from . import cache
+from . import upload
 from . import attachment
 import traceback
 
 
 logger = log.get_logger()
+
 
 def template():
     if request.method == 'GET':
@@ -176,6 +176,17 @@ def attachments(attachment_id=None):
     elif request.method == 'DELETE':
         event_handler.attachments.pop(attachment_id)
         return make_ok_response()
+
+    # Upload attachment files
+    elif request.method == 'POST':
+        if request.files:
+            stream = request.files['file']
+            if not stream:
+                return application.make_fail_response('Missing file data')
+
+            upload.add(stream)
+            return application.make_ok_response()
+        return application.make_fail_response('No upload file found')
 
 
 def ui_cache(template_key):
