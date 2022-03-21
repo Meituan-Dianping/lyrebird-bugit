@@ -15,7 +15,6 @@
         action="/plugins/bugit/api/attachments"
         :format="['jpg','jpeg','png','heic']"
         accept=".jpg,.jpeg,.png,.heic"
-        style="width: 100%;"
         :show-upload-list="false"
       >
       <Tooltip placement="right" content="Support .png/.jpg/.jpeg/.heic files">
