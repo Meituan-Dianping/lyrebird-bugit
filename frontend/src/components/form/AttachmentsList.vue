@@ -17,7 +17,11 @@
         accept=".jpg,.jpeg,.png,.gif,.bmp,.wbmp,.webp,.tif,.psd"
         :show-upload-list="false"
       >
-      <Tooltip placement="right" content="Support .jpg/.jpeg/.png/.gif/.bmp/.wbmp/.webp/.tif/.psd files">
+      <Tooltip 
+        placement="right" 
+        content="Support .jpg/.jpeg/.png/.gif/.bmp/.wbmp/.webp/.tif/.psd files"
+        max-width="450"
+      >
         <a><Icon type="md-add" /> Add attachments</a>
       </Tooltip>
     </Upload>
