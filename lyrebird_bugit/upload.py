@@ -52,8 +52,10 @@ def add(stream):
     publish('upload_files', upload_files)
 
 
-def delete(file_name):
-    file_path = Path(UPLOAD_ROOT).joinpath(file_name)
+def delete(file_path):
+    file_path = Path(file_path)
+    if file_path.parent != UPLOAD_ROOT:
+        return
     if file_path.exists() and file_path.is_file():
         file_path.unlink()
 
@@ -63,10 +65,7 @@ def _check_dir():
         UPLOAD_ROOT.mkdir(parents=True, exist_ok=True)
 
 
-def _reset_dir():
+def reset_dir():
     logger.debug('Upload files reset')
     if UPLOAD_ROOT.exists():
         shutil.rmtree(UPLOAD_ROOT)
-
-
-_reset_dir()

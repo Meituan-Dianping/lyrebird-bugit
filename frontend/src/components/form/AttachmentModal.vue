@@ -58,7 +58,7 @@ export default {
       if (!this.attachmentName) {
         return false
       }
-      const imageFileSuffix = ['png', 'jpg', 'jpeg', 'webp', 'heic']
+      const imageFileSuffix = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'wbmp', 'webp', 'tif', 'psd']
 
       let nameSplit = this.attachmentName.split('.')
       let nameSuffix = nameSplit[nameSplit.length - 1]

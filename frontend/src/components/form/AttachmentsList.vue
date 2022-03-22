@@ -13,11 +13,11 @@
     <Upload
         multiple
         action="/plugins/bugit/api/attachments"
-        :format="['jpg','jpeg','png','heic']"
-        accept=".jpg,.jpeg,.png,.heic"
+        :format="['jpg','jpeg','png','gif','bmp','wbmp','webp','tif','psd']"
+        accept=".jpg,.jpeg,.png,.gif,.bmp,.wbmp,.webp,.tif,.psd"
         :show-upload-list="false"
       >
-      <Tooltip placement="right" content="Support .png/.jpg/.jpeg/.heic files">
+      <Tooltip placement="right" content="Support .jpg/.jpeg/.png/.gif/.bmp/.wbmp/.webp/.tif/.psd files">
         <a><Icon type="md-add" /> Add attachments</a>
       </Tooltip>
     </Upload>
