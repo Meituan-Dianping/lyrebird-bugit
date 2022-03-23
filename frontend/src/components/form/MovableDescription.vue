@@ -26,12 +26,12 @@
 export default {
   props: ["data", "index"],
   methods: {
-    deleteDesc(index) {
-      this.$parent.$parent.deleteDesc(index);
+    deleteDesc (index) {
+      this.$parent.$parent.deleteDesc(index)
     },
-    sortDesc(index) {
-      this.$parent.$parent.sortDesc(index);
+    sortDesc (index) {
+      this.$parent.$parent.sortDesc(index)
     }
   }
-};
+}
 </script>

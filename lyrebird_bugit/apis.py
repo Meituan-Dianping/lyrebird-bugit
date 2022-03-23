@@ -1,5 +1,3 @@
-import imp
-import json
 import base64
 import codecs
 import inspect
@@ -12,11 +10,13 @@ from lyrebird.mock.context import make_fail_response, make_ok_response
 from . import event_handler
 from . import template_loader
 from . import cache
+from . import upload
 from . import attachment
 import traceback
 
 
 logger = log.get_logger()
+
 
 def template():
     if request.method == 'GET':
@@ -153,11 +153,15 @@ def _update_device_info(device_info, platform="Android"):
 def attachments(attachment_id=None):
     if request.method == 'GET':
         if not attachment_id:
-            return jsonify(list(event_handler.attachments.values()))
+            attachment_list = list(event_handler.attachments.values())
+            if not attachment_list:
+                upload.reset_dir()
+                attachment.remove_attach()
+            return jsonify(attachment_list)
         else:
-            attachment = event_handler.attachments.get(attachment_id)
-            if attachment:
-                return send_file(attachment['path'])
+            attachment_item = event_handler.attachments.get(attachment_id)
+            if attachment_item:
+                return send_file(attachment_item['path'])
             else:
                 return make_fail_response('Not found attachment')
 
@@ -174,8 +178,20 @@ def attachments(attachment_id=None):
         return make_ok_response(message=f'Edited picture {name} has been saved')
 
     elif request.method == 'DELETE':
-        event_handler.attachments.pop(attachment_id)
+        attachment_item = event_handler.attachments.pop(attachment_id)
+        upload.delete(attachment_item.get('path'))
         return make_ok_response()
+
+    # Upload attachment files
+    elif request.method == 'POST':
+        if request.files:
+            stream = request.files['file']
+            if not stream:
+                return application.make_fail_response('Missing file data')
+
+            upload.add(stream)
+            return application.make_ok_response()
+        return application.make_fail_response('No upload file found')
 
 
 def ui_cache(template_key):

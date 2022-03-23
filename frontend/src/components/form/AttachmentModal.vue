@@ -36,17 +36,16 @@ import ImageEditor from '@/components/form/ImageEditor.vue'
 import FileViewer from '@/components/form/FileViewer.vue'
 import CodeEditor from '@/components/event/CodeEditor.vue'
 
-
 export default {
   components: {
     ImageEditor,
     FileViewer,
     CodeEditor
   },
-  created() {
+  created () {
     this.$bus.$on('displayAttach', this.displayAttach)
   },
-  data() {
+  data () {
     return {
       isDisplayFile: false,
       attachmentName: null,
@@ -55,34 +54,34 @@ export default {
     }
   },
   computed: {
-    isImageFile() {
+    isImageFile () {
       if (!this.attachmentName) {
         return false
       }
-      const imageFileSuffix = ['png', 'jpg', 'jpeg', 'webp']
+      const imageFileSuffix = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'wbmp', 'webp', 'tif', 'psd']
 
       let nameSplit = this.attachmentName.split('.')
       let nameSuffix = nameSplit[nameSplit.length - 1]
 
       return imageFileSuffix.indexOf(nameSuffix) > -1
     },
-    isSnapshot() {
+    isSnapshot () {
       if (this.attachmentContent) {
         this.attachmentContent = JSON.stringify(this.attachmentContent, null, 2)
-        return true 
-      }else {
+        return true
+      } else {
         return false
       }
     }
   },
   methods: {
-    displayAttach(data) {
+    displayAttach (data) {
       this.isDisplayFile = true
       this.attachmentName = data.name
       this.attachmentId = data.id
       this.attachmentContent = data.eventObj
     },
-    saveImage() {
+    saveImage () {
       this.$bus.$emit('saveImage')
       this.isDisplayFile = false
     }
