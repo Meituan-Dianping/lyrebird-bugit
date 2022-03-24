@@ -61,7 +61,7 @@ export default {
 }
 </script>
 
-<style less>
+<style scoped>
 .split-left-form {
   height: calc(100vh - 52px - 32px - 5px);
   /* total:100vh
