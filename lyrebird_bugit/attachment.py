@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 import codecs
 import lyrebird
 import requests
@@ -10,9 +11,11 @@ ATTACHMENT_ROOT = Path(BUGIT_STORAGE)/'attachments'
 
 EXPORT_URL = f'http://127.0.0.1:{config.get("mock.port")}/api/snapshot/export/event'
 
+
 def _check_dir():
     if not ATTACHMENT_ROOT.exists():
-       ATTACHMENT_ROOT.mkdir(parents=True, exist_ok=True)
+        ATTACHMENT_ROOT.mkdir(parents=True, exist_ok=True)
+
 
 def export_snapshot(snapshot):
     _check_dir()
@@ -28,8 +31,19 @@ def export_snapshot(snapshot):
         'path': str(ATTACHMENT_ROOT / snapshot['name'])+'.lb',
     }
 
+
 def remove_attach():
     if not ATTACHMENT_ROOT.exists():
         pass
     else:
         shutil.rmtree(ATTACHMENT_ROOT)
+
+
+def rename(attachment_item, new_file_name):
+    raw_file_path = Path(attachment_item.get('path'))
+    new_file_path = raw_file_path.parent.joinpath(new_file_name)
+    if os.path.exists(new_file_path):
+        raise FileExistsError
+    os.rename(raw_file_path, new_file_path)
+    attachment_item['path'] = str(new_file_path)
+    attachment_item['name'] = new_file_path.name

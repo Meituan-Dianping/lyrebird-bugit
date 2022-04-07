@@ -104,6 +104,9 @@ export default {
     },
     deleteSnapshot (state, index) {
       state.snapshotList.splice(index, 1)
+    },
+    renameSnapshot (state, { index, newName }) {
+      state.snapshotList[index].name = newName
     }
   },
   actions: {
@@ -200,6 +203,21 @@ export default {
     removeAttachment ({ commit }, attachment) {
       commit('deleteAttachment', attachment.index)
       api.removeAttachment(attachment.id)
+    },
+    renameAttachment ({ commit }, { attachment, newName }) {
+      api.renameAttachment(attachment.id, newName)
+        .then(response => {
+          if (response.data.code !== 1000) {
+            bus.$emit('msg.error', response.data.message)
+            return
+          }
+          api.getAttachments().then(response => {
+            commit('updateAttachmentsList', response.data)
+          })
+        })
+        .catch(response => {
+          bus.$emit('msg.error', response.data)
+        })
     },
     saveCache ({ state, dispatch, commit }) {
       if (!state.createName || state.createName.trim().length === 0) {

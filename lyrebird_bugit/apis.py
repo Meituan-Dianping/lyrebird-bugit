@@ -182,17 +182,27 @@ def attachments(attachment_id=None):
         upload.delete(attachment_item.get('path'))
         return make_ok_response()
 
-    # Upload attachment files
     elif request.method == 'POST':
-        if request.files:
-            stream = request.files['file']
-            if not stream:
-                return application.make_fail_response('Missing file data')
+        if not attachment_id:
+            # Upload attachment files
+            if request.files:
+                stream = request.files['file']
+                if not stream:
+                    return application.make_fail_response('Missing file data')
 
-            upload.add(stream)
-            return application.make_ok_response()
-        return application.make_fail_response('No upload file found')
-
+                upload.add(stream)
+                return application.make_ok_response()
+            return application.make_fail_response('No upload file found')
+        else:
+            # Rename
+            attachment_item = event_handler.attachments.get(attachment_id)
+            new_name = request.json.get('newName')
+            try:
+                attachment.rename(attachment_item, new_name)
+                return application.make_ok_response()
+            except FileExistsError:
+                return application.make_fail_response(f'重命名文件[{attachment_item.get("name")}]失败. 文件[{new_name}]已存在')
+            
 
 def ui_cache(template_key):
     if request.method == 'GET':
