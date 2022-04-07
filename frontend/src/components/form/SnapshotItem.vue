@@ -87,8 +87,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-.ivu-input-group {
-  display: inline-table;
-}
-</style>

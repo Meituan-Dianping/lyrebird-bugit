@@ -40,7 +40,7 @@
 <script>
 export default {
   props: ['data', 'index'],
-  data() {
+  data () {
     return {
       'editMode': false,
       'baseName': this.data.name,
@@ -59,7 +59,7 @@ export default {
       this.editMode = true
     },
     saveName (data) {
-      if (!this.baseName || this.baseName.trim().length == 0){
+      if (!this.baseName || this.baseName.trim().length === 0) {
         this.$bus.$emit('msg.error', '文件名不能为空')
         return
       }
@@ -68,7 +68,7 @@ export default {
         return
       }
       this.$store.dispatch('renameAttachment', {
-        attachment: data, 
+        attachment: data,
         newName: this.baseName + '.' + this.ext
       })
       this.editMode = false
@@ -85,8 +85,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-.ivu-input-group {
-  display: inline-table;
-}
-</style>
