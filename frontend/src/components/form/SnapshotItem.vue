@@ -44,6 +44,9 @@ export default {
       'name': this.data.name
     }
   },
+  created () {
+    this.$bus.$on(`setSnapshotEditMode_${this.index}`, this.setEditMode)
+  },
   methods: {
     deleteAttach (data) {
       this.$store.commit('deleteSnapshot', this.index)
@@ -52,37 +55,17 @@ export default {
       this.$bus.$emit('displayAttach', data)
     },
     rename () {
-      this.editMode = true
-    },
-    saveName (data) {
-      if (!this.name || this.name.trim().length === 0) {
-        this.$bus.$emit('msg.error', '文件名不能为空')
-        return
-      }
-      if (this.name.indexOf('/') > -1 || this.name.indexOf(':') > -1) {
-        this.$bus.$emit('msg.error', '文件名包含非法字符')
-        return
-      }
-      let snapshotList = this.$store.state.form.snapshotList
-      for (let i in snapshotList) {
-        if (snapshotList[i].name.toLowerCase() === this.name.toLowerCase()) {
-          if (i.toString() !== this.index.toString()) {
-            this.$bus.$emit('msg.error', '重命名失败，存在同名Snapshot [' + this.name + ']')
-          } else {
-            this.editMode = false
-          }
-          return
-        }
-      }
-      this.$store.commit('renameSnapshot', {
-        index: this.index,
-        newName: this.name
-      })
-      this.editMode = false
+      this.setEditMode(true)
     },
     cancelRename () {
       this.name = this.data.name
-      this.editMode = false
+      this.setEditMode(false)
+    },
+    setEditMode (status) {
+      this.editMode = status
+    },
+    saveName (data) {
+      this.$bus.$emit('saveSnapshotName', this.index, this.name)
     }
   }
 }

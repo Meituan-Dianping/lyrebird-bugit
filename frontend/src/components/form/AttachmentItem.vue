@@ -4,7 +4,7 @@
       <template v-if="editMode">
         <Col span="20">
           <Input style="padding-right:10px" v-model="baseName" size="small" type="text">
-            <span slot="append">.{{ext}}</span>
+            <span slot="append">.{{extensionName}}</span>
           </Input>
         </Col>
         <Col span="4">
@@ -44,8 +44,11 @@ export default {
     return {
       'editMode': false,
       'baseName': this.data.name,
-      'ext': ''
+      'extensionName': ''
     }
+  },
+  created () {
+    this.$bus.$on(`setAttachmentEditMode_${this.index}`, this.setEditMode)
   },
   methods: {
     deleteAttach (data) {
@@ -56,31 +59,22 @@ export default {
     },
     rename () {
       this.splitName()
-      this.editMode = true
+      this.setEditMode(true)
     },
     saveName (data) {
-      if (!this.baseName || this.baseName.trim().length === 0) {
-        this.$bus.$emit('msg.error', '文件名不能为空')
-        return
-      }
-      if (this.baseName.indexOf('/') > -1 || this.baseName.indexOf(':') > -1){
-        this.$bus.$emit('msg.error', '文件名包含非法字符')
-        return
-      }
-      this.$store.dispatch('renameAttachment', {
-        attachment: data,
-        newName: this.baseName + '.' + this.ext
-      })
-      this.editMode = false
+      this.$bus.$emit('saveAttachmentName', data, this.index, this.baseName, this.extensionName)
     },
     cancelRename () {
-      this.editMode = false
+      this.setEditMode(false)
     },
     splitName () {
       if (this.data.name.indexOf('.') > -1) {
         this.baseName = this.data.name.split('.').slice(0, -1).join('.')
-        this.ext = String(this.data.name.split('.').slice(-1))
+        this.extensionName = String(this.data.name.split('.').slice(-1))
       }
+    },
+    setEditMode (status) {
+      this.editMode = status
     }
   }
 }

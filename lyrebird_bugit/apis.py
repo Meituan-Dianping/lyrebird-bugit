@@ -200,8 +200,8 @@ def attachments(attachment_id=None):
             try:
                 attachment.rename(attachment_item, new_name)
                 return application.make_ok_response()
-            except FileExistsError:
-                return application.make_fail_response(f'重命名文件[{attachment_item.get("name")}]失败. 文件[{new_name}]已存在')
+            except Exception as e:
+                return application.make_fail_response(f'Rename attachment [{attachment_item.get("name")}] to [${new_name}] error: [{e}]')
             
 
 def ui_cache(template_key):

@@ -42,8 +42,9 @@ def remove_attach():
 def rename(attachment_item, new_file_name):
     raw_file_path = Path(attachment_item.get('path'))
     new_file_path = raw_file_path.parent.joinpath(new_file_name)
-    if os.path.exists(new_file_path):
-        raise FileExistsError
-    os.rename(raw_file_path, new_file_path)
-    attachment_item['path'] = str(new_file_path)
-    attachment_item['name'] = new_file_path.name
+    try:
+        os.rename(raw_file_path, new_file_path)
+        attachment_item['path'] = str(new_file_path)
+        attachment_item['name'] = new_file_path.name
+    except Exception as e:
+        raise e
