@@ -193,15 +193,15 @@ def attachments(attachment_id=None):
                 upload.add(stream)
                 return application.make_ok_response()
             return application.make_fail_response('No upload file found')
-        else:
-            # Rename
-            attachment_item = event_handler.attachments.get(attachment_id)
-            new_name = request.json.get('newName')
-            try:
-                attachment.rename(attachment_item, new_name)
-                return application.make_ok_response()
-            except Exception as e:
-                return application.make_fail_response(f'Rename attachment [{attachment_item.get("name")}] to [${new_name}] error: [{e}]')
+            
+        # Rename
+        attachment_item = event_handler.attachments.get(attachment_id)
+        new_name = request.json.get('newName')
+        try:
+            attachment.rename(attachment_item, new_name)
+            return application.make_ok_response()
+        except Exception as e:
+            return application.make_fail_response(f'Rename attachment [{attachment_item.get("name")}] to [${new_name}] error: [{e}]')
             
 
 def ui_cache(template_key):
