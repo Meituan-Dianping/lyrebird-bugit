@@ -52,7 +52,10 @@ export default {
         return this.$store.state.form.attachmentsList[this.index].editMode
       },
       set (val) {
-        this.$store.state.form.attachmentsList[this.index].editMode = val
+        this.$store.commit('setAttachmentEditMode', {
+          index: this.index,
+          mode: val
+        })
       }
     }
   },
@@ -65,22 +68,19 @@ export default {
     },
     rename () {
       this.splitName()
-      this.setEditMode(true)
+      this.editMode = true
     },
     saveName (data) {
       this.$bus.$emit('saveAttachmentName', data, this.index, this.baseName, this.extensionName)
     },
     cancelRename () {
-      this.setEditMode(false)
+      this.editMode = false
     },
     splitName () {
       if (this.data.name.indexOf('.') > -1) {
         this.baseName = this.data.name.split('.').slice(0, -1).join('.')
         this.extensionName = String(this.data.name.split('.').slice(-1))
       }
-    },
-    setEditMode (status) {
-      this.editMode = status
     }
   }
 }

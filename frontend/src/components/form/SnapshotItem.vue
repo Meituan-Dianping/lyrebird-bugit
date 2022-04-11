@@ -49,7 +49,10 @@ export default {
         return this.$store.state.form.snapshotList[this.index].editMode
       },
       set (val) {
-        this.$store.state.form.snapshotList[this.index].editMode = val
+        this.$store.commit('setSnapshotEditMode', {
+          index: this.index,
+          mode: val
+        })
       }
     }
   },
@@ -61,14 +64,11 @@ export default {
       this.$bus.$emit('displayAttach', data)
     },
     rename () {
-      this.setEditMode(true)
+      this.editMode = true
     },
     cancelRename () {
       this.name = this.data.name
-      this.setEditMode(false)
-    },
-    setEditMode (status) {
-      this.editMode = status
+      this.editMode = false
     },
     saveName (data) {
       this.$bus.$emit('saveSnapshotName', this.index, this.name)
