@@ -86,9 +86,6 @@ export default {
     updateAttachmentsList (state, attachmentsList) {
       state.attachmentsList = attachmentsList
     },
-    addAttachmentsList (state, attachment) {
-      state.attachmentsList.push(attachment)
-    },
     updateShownFileName (state, name) {
       state.shownFileName = name
     },
@@ -98,15 +95,25 @@ export default {
     deleteAttachment (state, index) {
       state.attachmentsList.splice(index, 1)
     },
+    setAttachmentEditMode (state, { index, mode }) {
+      state.attachmentsList[index].editMode = mode
+    },
     addSnapshot (state, snapshot) {
       let fileName = 'snapshot_' + snapshot.id
-      state.snapshotList.push({ 'name': fileName, 'eventObj': snapshot })
+      state.snapshotList.push({
+        'name': fileName,
+        'editMode': false,
+        'eventObj': snapshot
+      })
     },
     deleteSnapshot (state, index) {
       state.snapshotList.splice(index, 1)
     },
     renameSnapshot (state, { index, newName }) {
       state.snapshotList[index].name = newName
+    },
+    setSnapshotEditMode (state, { index, mode }) {
+      state.snapshotList[index].editMode = mode
     }
   },
   actions: {

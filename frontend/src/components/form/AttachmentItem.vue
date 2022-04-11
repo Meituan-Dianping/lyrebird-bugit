@@ -42,13 +42,19 @@ export default {
   props: ['data', 'index'],
   data () {
     return {
-      'editMode': false,
       'baseName': this.data.name,
       'extensionName': ''
     }
   },
-  created () {
-    this.$bus.$on(`setAttachmentEditMode_${this.index}`, this.setEditMode)
+  computed: {
+    editMode: {
+      get () {
+        return this.$store.state.form.attachmentsList[this.index].editMode
+      },
+      set (val) {
+        this.$store.state.form.attachmentsList[this.index].editMode = val
+      }
+    }
   },
   methods: {
     deleteAttach (data) {

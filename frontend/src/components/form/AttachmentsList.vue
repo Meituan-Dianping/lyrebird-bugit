@@ -100,8 +100,11 @@ export default {
         attachment: attachment,
         newName: fullname
       })
+      this.$store.commit('setAttachmentEditMode', {
+        index: index,
+        mode: false
+      })
       this.$bus.$emit('msg.success', `Rename attachment to [${fullname}] success!`)
-      this.$bus.$emit(`setAttachmentEditMode_${index}`, false)
     },
     saveSnapshotName (index, name) {
       if (!this.isNameValid(name)) {
@@ -115,8 +118,11 @@ export default {
         index: index,
         newName: name
       })
+      this.$store.commit('setSnapshotEditMode', {
+        index: index,
+        mode: false
+      })
       this.$bus.$emit('msg.success', `Rename snapshot to [${name}] success!`)
-      this.$bus.$emit(`setSnapshotEditMode_${index}`, false)
     }
   }
 }

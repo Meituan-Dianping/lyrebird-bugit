@@ -197,8 +197,11 @@ def attachments(attachment_id=None):
         # Rename
         attachment_item = event_handler.attachments.get(attachment_id)
         new_name = request.json.get('newName')
-        attachment.rename(attachment_item, new_name)
-        return application.make_ok_response()
+        try:
+            attachment.rename(attachment_item, new_name)
+            return application.make_ok_response()
+        except FileNotFoundError as e:
+            return application.make_fail_response(f'Rename attachment [{attachment_item.get("name")}] to [${new_name}] error: [{e}]')
             
 
 def ui_cache(template_key):

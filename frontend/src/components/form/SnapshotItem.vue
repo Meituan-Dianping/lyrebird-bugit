@@ -40,12 +40,18 @@ export default {
   props: ['data', 'index'],
   data () {
     return {
-      'editMode': false,
       'name': this.data.name
     }
   },
-  created () {
-    this.$bus.$on(`setSnapshotEditMode_${this.index}`, this.setEditMode)
+  computed: {
+    editMode: {
+      get () {
+        return this.$store.state.form.snapshotList[this.index].editMode
+      },
+      set (val) {
+        this.$store.state.form.snapshotList[this.index].editMode = val
+      }
+    }
   },
   methods: {
     deleteAttach (data) {
