@@ -12,6 +12,7 @@ export default {
     ruleValidate: null,
     formValue: {},
     attachmentsList: [],
+    inEditModeAttachments: [],
     snapshotList: [],
     loadAttachmentCount: 0,
     shownFileName: null,
@@ -23,7 +24,8 @@ export default {
       code: null,
       type: null,
       message: null
-    }
+    },
+    'illegalChars': [':', '/']
   },
   mutations: {
     setFormData (state, sourceData) {
@@ -83,8 +85,22 @@ export default {
     deleteExtraMsg (state, indexes) {
       state.templateDetail[indexes.propsIndex].extraMsg.splice(indexes.index, 1)
     },
+    recordInEditModeAttachments (state) {
+      state.inEditModeAttachments = []
+      for (const i in state.attachmentsList) {
+        if (state.attachmentsList[i].editMode === true) {
+          state.inEditModeAttachments.push(state.attachmentsList[i].id)
+        }
+      }
+    },
     updateAttachmentsList (state, attachmentsList) {
       state.attachmentsList = attachmentsList
+      for (const i in state.attachmentsList) {
+        let id = state.attachmentsList[i].id
+        if (state.inEditModeAttachments.indexOf(id) > -1) {
+          state.attachmentsList[i].editMode = true
+        }
+      }
     },
     updateShownFileName (state, name) {
       state.shownFileName = name
@@ -109,7 +125,7 @@ export default {
     deleteSnapshot (state, index) {
       state.snapshotList.splice(index, 1)
     },
-    renameSnapshot (state, { index, newName }) {
+    setSnapshotName (state, { index, newName }) {
       state.snapshotList[index].name = newName
     },
     setSnapshotEditMode (state, { index, mode }) {
@@ -198,6 +214,7 @@ export default {
         })
     },
     loadAttachment ({ state, commit }) {
+      commit('recordInEditModeAttachments')
       api.getAttachments().then(response => {
         commit('updateAttachmentsList', response.data)
         if (state.attachmentsList.length > 0 && state.loadAttachmentCount > 0) {
@@ -211,20 +228,79 @@ export default {
       commit('deleteAttachment', attachment.index)
       api.removeAttachment(attachment.id)
     },
-    renameAttachment ({ commit }, { attachment, newName }) {
-      api.renameAttachment(attachment.id, newName)
-        .then(response => {
-          if (response.data.code !== 1000) {
-            bus.$emit('msg.error', response.data.message)
-            return
-          }
-          api.getAttachments().then(response => {
-            commit('updateAttachmentsList', response.data)
+    isNameValid ({ state }, name) {
+      if (!name || name.trim().length === 0) {
+        return Promise.reject('File name cannot be empty')
+      }
+      for (const i in state.illegalChars) {
+        if (name.indexOf(state.illegalChars[i]) > -1) {
+          return Promise.reject(`Illegal character [${state.illegalChars[i]}] in file name.`)
+        }
+      }
+      return Promise.resolve()
+    },
+    isNameNotExists ({ state }, { name, sourceList, index }) {
+      for (let i in sourceList) {
+        if (sourceList[i].name.toLowerCase() === name.toLowerCase() && i.toString() !== index.toString()) {
+          return Promise.reject('A file with the same name exists')
+        }
+      }
+      return Promise.resolve()
+    },
+    renameAttachment ({ state, commit, dispatch }, { index, baseName, extensionName }) {
+      dispatch('isNameValid', baseName).then(() => {
+        let newName = `${baseName}.${extensionName}`
+        dispatch('isNameNotExists', {
+          name: newName,
+          sourceList: state.attachmentsList,
+          index: index
+        }).then(() => {
+          let attachment = state.attachmentsList[index]
+          api.renameAttachment(attachment.id, newName)
+            .then(response => {
+              if (response.data.code !== 1000) {
+                bus.$emit('msg.error', response.data.message)
+                return
+              }
+              commit('setAttachmentEditMode', {
+                index: index,
+                mode: false
+              })
+              commit('recordInEditModeAttachments')
+              api.getAttachments().then(response => {
+                commit('updateAttachmentsList', response.data)
+              })
+              bus.$emit('msg.success', `Rename attachment to [${newName}] success!`)
+            })
+            .catch(response => {
+              bus.$emit('msg.error', response.data)
+            })
+        }).catch(err => {
+          bus.$emit('msg.error', `Rename attachment to [${newName}] error: ${err}`)
+        })
+      }).catch(err => {
+        bus.$emit('msg.error', `Rename attachment error: ${err}`)
+      })
+    },
+    renameSnapshot ({ state, commit, dispatch }, { index, newName }) {
+      dispatch('isNameValid', newName).then(() => {
+        dispatch('isNameNotExists', {
+          name: newName,
+          sourceList: state.snapshotList,
+          index: index
+        }).then(() => {
+          commit('setSnapshotName', { index, newName })
+          commit('setSnapshotEditMode', {
+            index: index,
+            mode: false
           })
+          bus.$emit('msg.success', `Rename snapshot to [${newName}] success!`)
+        }).catch(err => {
+          bus.$emit('msg.error', `Rename snapshot to [${newName}] error: ${err}`)
         })
-        .catch(response => {
-          bus.$emit('msg.error', response.data)
-        })
+      }).catch(err => {
+        bus.$emit('msg.error', `Rename snapshot error: ${err}`)
+      })
     },
     saveCache ({ state, dispatch, commit }) {
       if (!state.createName || state.createName.trim().length === 0) {
