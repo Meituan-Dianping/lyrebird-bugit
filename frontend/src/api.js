@@ -92,6 +92,14 @@ export const removeAttachment = (id) => {
   })
 }
 
+export const renameAttachment = (id, newName) => {
+  return axios({
+    url: API_PREFIX + '/attachments/' + id,
+    method: 'POST',
+    data: { newName }
+  })
+}
+
 export const getCache = (key) => {
   return axios({
     url: API_PREFIX + '/cache/' + key

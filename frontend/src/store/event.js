@@ -6,32 +6,36 @@ export default {
     channelNames: [],
     channelFilters: ['flow', 'notice', 'snapshot'],
     events: [],
+    loadingEvents: false,
     selectedEventId: null,
     eventDetail: '',
     page: null
   },
   mutations: {
-    setChannelNames(state, channelNames) {
+    setChannelNames (state, channelNames) {
       state.channelNames = channelNames
     },
-    setChannelFilters(state, filters) {
+    setChannelFilters (state, filters) {
       state.channelFilters = filters
     },
-    setEvents(state, events) {
+    setEvents (state, events) {
       state.events = events
     },
-    setSelectedEventId(state, eventId) {
+    setLoadingEvents (state, isLoading) {
+      state.loadingEvents = isLoading
+    },
+    setSelectedEventId (state, eventId) {
       state.selectedEventId = eventId
     },
-    setEventDetail(state, eventDetail) {
+    setEventDetail (state, eventDetail) {
       state.eventDetail = eventDetail
     },
-    setPage(state, page) {
+    setPage (state, page) {
       state.page = page
     }
   },
   actions: {
-    loadChannelNames({ commit }) {
+    loadChannelNames ({ commit }) {
       // Filter out the target channel
       api.getDefaultChannelNames().then(response => {
         if (response.data.code === 1000) {
@@ -39,13 +43,14 @@ export default {
         }
       })
     },
-    loadEvents({ state, commit }, options = {}) {
+    loadEvents ({ state, commit }, options = {}) {
       let eventId = null
       if (options.eventId) {
         eventId = options.eventId
       } else if (state.selectedEventId) {
         eventId = state.selectedEventId
       }
+      commit('setLoadingEvents', true)
       api.getEvent({ channelFilters: state.channelFilters, eventId: eventId, page: options.page }).then(response => {
         if (response.data.code === 1000) {
           let events = response.data.events
@@ -67,17 +72,18 @@ export default {
           commit('setPage', {
             index: response.data.page, count: response.data.page_count, size: response.data.page_size
           })
+          commit('setLoadingEvents', false)
         }
       })
     },
-    updateChannelFilters({ commit, dispatch }, filters) {
+    updateChannelFilters ({ commit, dispatch }, filters) {
       commit('setChannelFilters', filters)
       dispatch('loadEvents')
     },
-    showNotice({ dispatch }) {
+    showNotice ({ dispatch }) {
       dispatch('updateChannelFilters', ['notice'])
     },
-    showAll({ dispatch }) {
+    showAll ({ dispatch }) {
       api.getDefaultChannelNames().then(response => {
         if (response.data.code === 1000) {
           dispatch('updateChannelFilters', response.data.data)

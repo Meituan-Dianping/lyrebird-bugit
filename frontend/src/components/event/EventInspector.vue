@@ -37,6 +37,7 @@
         @on-change="onPageChange"
       ></Page>
     </div>
+    <Spin fix v-if="loadingEvents">Loading Events...</Spin>
     <div
       v-show="isContextMenuShown"
       class="row-contextmenu ivu-select-dropdown"
@@ -85,6 +86,9 @@ export default {
   computed: {
     events () {
       return this.$store.state.event.events
+    },
+    loadingEvents () {
+      return this.$store.state.event.loadingEvents
     },
     page () {
       return this.$store.state.event.page

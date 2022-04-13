@@ -2,12 +2,12 @@
   <FormItem label="Attachments">
     <div v-if="attachments.length">
       <p v-for="(attachment, index) in attachments" :key="index">
-        <AttachmentItem :data="attachment" :index="index"/>
+        <AttachmentItem :attachment="attachment" :index="index"/>
       </p>
     </div>
     <div v-if="snapshots.length">
       <p v-for="(snapshot, index) in snapshots" :key="index">
-        <SnapshotItem :data="snapshot" :index="index"/>
+        <SnapshotItem :snapshot="snapshot" :index="index"/>
       </p>
     </div>
     <Upload
@@ -17,8 +17,8 @@
         accept=".jpg,.jpeg,.png,.gif,.bmp,.wbmp,.webp,.tif,.psd"
         :show-upload-list="false"
       >
-      <Tooltip 
-        placement="right" 
+      <Tooltip
+        placement="right"
         content="Support .jpg/.jpeg/.png/.gif/.bmp/.wbmp/.webp/.tif/.psd files"
         max-width="450"
       >
@@ -61,3 +61,10 @@ export default {
   }
 }
 </script>
+<style>
+.attachment-col {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+}
+</style>

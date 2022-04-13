@@ -13,7 +13,7 @@ manifest(
         ('/api/issue', apis.issue, ['GET', 'POST']),
         ('/api/take_screenshot/<string:platform>/<string:device_id>', apis.take_screenshot, ['GET']),
         ('/api/attachments', apis.attachments, ['GET', 'POST']),
-        ('/api/attachments/<string:attachment_id>', apis.attachments, ['GET', 'PUT', 'DELETE']),
+        ('/api/attachments/<string:attachment_id>', apis.attachments, ['GET', 'PUT', 'DELETE', 'POST']),
         ('/api/cache/<string:template_key>', apis.ui_cache, ['GET', 'POST', 'DELETE'])
     ],
     event=[

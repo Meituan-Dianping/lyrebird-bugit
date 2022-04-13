@@ -10,7 +10,7 @@
           :index="index"
         ></component>
         <AttachmentsList/>
-        <Spin fix v-if="loadTempalte">Loading Template</Spin>
+        <Spin fix v-if="loadTemplate">Loading Template...</Spin>
       </Form>
       <Submit></Submit>
     </div>
@@ -36,15 +36,15 @@ export default {
     Submit
   },
   computed: {
-    fields() {
+    fields () {
       return this.$store.state.form.templateDetail
     },
-    loadTempalte(){
+    loadTemplate () {
       return this.$store.state.form.loadTemplate
     }
   },
   methods: {
-    getFormComponentByData(index, field) {
+    getFormComponentByData (index, field) {
       if (field.component === 'input') {
         return 'InputFormItem'
       } else if (field.component === 'select') {
