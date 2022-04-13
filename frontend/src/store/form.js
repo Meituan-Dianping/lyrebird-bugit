@@ -94,13 +94,15 @@ export default {
       }
     },
     updateAttachmentsList (state, attachmentsList) {
-      state.attachmentsList = attachmentsList
-      for (const i in state.attachmentsList) {
-        let id = state.attachmentsList[i].id
+      for (const i in attachmentsList) {
+        let id = attachmentsList[i].id
         if (state.inEditModeAttachments.indexOf(id) > -1) {
-          state.attachmentsList[i].editMode = true
+          attachmentsList[i].editMode = true
+        } else {
+          attachmentsList[i].editMode = false
         }
       }
+      state.attachmentsList = attachmentsList
     },
     updateShownFileName (state, name) {
       state.shownFileName = name

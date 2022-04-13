@@ -32,7 +32,6 @@ def on_android_screenshot(msg):
     for item in msg:
         attachment_id = str(uuid4())
         attachments[attachment_id] = {'id': attachment_id,
-                                      'editMode': False,
                                       'name': item['screenshot']['name'],
                                       'path': item['screenshot']['path']}
     lyrebird.emit('attachments')
@@ -44,7 +43,6 @@ def on_ios_screenshot(msg):
     for item in msg:
         attachment_id = str(uuid4())
         attachments[attachment_id] = {'id': attachment_id,
-                                      'editMode': False,
                                       'name': item['screenshot']['name'],
                                       'path': item['screenshot']['path']}
     lyrebird.emit('attachments')
@@ -56,7 +54,6 @@ def on_upload_files(msg):
     for item in msg:
         attachment_id = str(uuid4())
         attachments[attachment_id] = {'id': attachment_id,
-                                      'editMode': False,
                                       'name': item['upload_file']['name'],
                                       'path': item['upload_file']['path']}
     lyrebird.emit('attachments')

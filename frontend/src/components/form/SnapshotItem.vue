@@ -7,27 +7,27 @@
         </Col>
         <Col span="4">
           <Tooltip content="Save new snapshot name" placement="top">
-            <a style="padding-right:5px" @click="saveName()">Save</a>
+            <a style="padding-right:5px" @click="saveName">Save</a>
           </Tooltip>
           <Tooltip content="Cancel" placement="top">
-            <a @click="cancelRename()">Cancel</a>
+            <a @click="cancelRename">Cancel</a>
           </Tooltip>
         </Col>
       </template>
       <template v-else>
         <Col span="20">
           <Tooltip content="Click to preview" placement="top">
-            <a style="padding-right:10px;color:#515a6e" @click="displayAttach()">
+            <a style="padding-right:10px;color:#515a6e" @click="displayAttach">
               <Icon type="md-attach" /> {{name}}
             </a>
           </Tooltip>
         </Col>
         <Col span="4">
           <Tooltip content="Rename this snapshot" placement="top">
-            <a style="padding-right:5px" @click="rename()">Rename</a>
+            <a style="padding-right:5px" @click="rename">Rename</a>
           </Tooltip>
           <Tooltip content="Delete" placement="top">
-            <a @click="deleteAttach()">Delete</a>
+            <a @click="deleteAttach">Delete</a>
           </Tooltip>
         </Col>
       </template>
