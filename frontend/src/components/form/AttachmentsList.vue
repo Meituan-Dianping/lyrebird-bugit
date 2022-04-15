@@ -1,12 +1,12 @@
 <template>
   <FormItem label="Attachments">
     <div v-if="attachments.length">
-      <p v-for="(attachment, index) in attachments" :key="index">
+      <p v-for="(attachment, index) in attachments" :key="index" class="attachment-line">
         <AttachmentItem :attachment="attachment" :index="index"/>
       </p>
     </div>
     <div v-if="snapshots.length">
-      <p v-for="(snapshot, index) in snapshots" :key="index">
+      <p v-for="(snapshot, index) in snapshots" :key="index" class="attachment-line">
         <SnapshotItem :snapshot="snapshot" :index="index"/>
       </p>
     </div>
@@ -62,9 +62,41 @@ export default {
 }
 </script>
 <style>
-.attachment-col {
+.attachment-line {
+  height: 32px !important;
+}
+.attachment-item {
+  display: inline-flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 32px;
+}
+.attachment-name {
   display: flex !important;
   flex-direction: column;
   justify-content: center;
+  width: 80%;
+  height: 32px;
+}
+.attachment-name .ivu-tooltip {
+  display: inline-flex;
+}
+.attachment-name .ivu-tooltip .ivu-tooltip-rel {
+  width: -webkit-fill-available !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: keep-all;
+  padding-right: 3px;
+}
+.attachment-actions {
+  width: 20%;
+  height: 32px;
+  overflow: auto;
+  justify-content: flex-end;
+  display: flex;
+  padding-right: 2px;
 }
 </style>
