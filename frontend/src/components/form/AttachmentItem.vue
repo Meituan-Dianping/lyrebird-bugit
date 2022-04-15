@@ -2,7 +2,7 @@
   <span class="attachment-item">
       <template v-if="editMode">
         <span class="attachment-name">
-          <Input style="padding-right:10px" v-model="baseName" size="small" type="text">
+          <Input style="padding-right:3px" v-model="baseName" size="small" type="text">
             <span slot="append">.{{extensionName}}</span>
           </Input>
         </span>

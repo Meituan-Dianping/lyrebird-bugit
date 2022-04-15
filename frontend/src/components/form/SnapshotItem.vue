@@ -2,7 +2,7 @@
   <span class="attachment-item">
       <template v-if="editMode">
         <span class="attachment-name">
-          <Input style="padding-right:10px" v-model="name" size="small" type="text" />
+          <Input style="padding-right:3px" v-model="name" size="small" type="text" />
         </span>
         <span class="attachment-actions">
           <Tooltip content="Click to preview" placement="top">
