@@ -7,7 +7,7 @@
           </Input>
         </span>
         <span class="attachment-actions">
-          <Tooltip content="Click to preview" placement="top">
+          <Tooltip content="Preview" placement="top">
             <Button
              size="small"
              type="text"
@@ -17,7 +17,7 @@
              >
             </Button>
           </Tooltip>
-          <Tooltip content="Save new name" placement="top">
+          <Tooltip content="Save" placement="top">
             <Button
              type="text"
              size="small"
@@ -45,7 +45,7 @@
           </Tooltip>
         </span>
         <span class="attachment-actions">
-          <Tooltip content="Click to preview" placement="top">
+          <Tooltip content="Preview" placement="top">
             <Button
              size="small"
              type="text"
