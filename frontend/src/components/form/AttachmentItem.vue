@@ -1,40 +1,76 @@
 <template>
-  <FormItem>
-    <Row>
+  <span class="attachment-item">
       <template v-if="editMode">
-        <Col span="20" class="attachment-col">
-          <Input style="padding-right:10px" v-model="baseName" size="small" type="text">
+        <span class="attachment-name">
+          <Input style="padding-right:3px" v-model="baseName" size="small" type="text">
             <span slot="append">.{{extensionName}}</span>
           </Input>
-        </Col>
-        <Col span="4">
-          <Tooltip content="Save new attachment name" placement="top">
-            <a style="padding-right:5px" @click="saveName">Save</a>
+        </span>
+        <span class="attachment-actions">
+          <Tooltip content="Preview" placement="top">
+            <Button
+             size="small"
+             type="text"
+             icon="md-open"
+             style="margin-right:2px"
+             @click="displayAttach"
+             />
+          </Tooltip>
+          <Tooltip content="Save" placement="top">
+            <Button
+             type="text"
+             size="small"
+             icon="md-checkmark"
+             style="margin-right:2px"
+             @click="saveName"
+             />
           </Tooltip>
           <Tooltip content="Cancel" placement="top">
-            <a @click="cancelRename">Cancel</a>
+            <Button
+              size="small"
+              type="text"
+              icon="md-close"
+              @click="cancelRename"
+              />
           </Tooltip>
-        </Col>
+        </span>
       </template>
       <template v-else>
-        <Col span="20">
-          <Tooltip content="Click to preview" placement="top">
-            <a style="padding-right:10px;color:#515a6e" @click="displayAttach">
+        <span class="attachment-name">
+          <Tooltip :content="attachment.name" placement="top" max-width="500">
               <Icon type="md-attach" /> {{attachment.name}}
-            </a>
           </Tooltip>
-        </Col>
-        <Col span="4">
-          <Tooltip content="Rename this attachment" placement="top">
-            <a style="padding-right:5px" @click="rename">Rename</a>
+        </span>
+        <span class="attachment-actions">
+          <Tooltip content="Preview" placement="top">
+            <Button
+             size="small"
+             type="text"
+             icon="md-open"
+             style="margin-right:2px"
+             @click="displayAttach"
+             />
+          </Tooltip>
+          <Tooltip content="Rename" placement="top">
+            <Button
+             size="small"
+             type="text"
+             icon="md-create"
+             style="margin-right:2px"
+             @click="rename"
+             />
           </Tooltip>
           <Tooltip content="Delete" placement="top">
-            <a @click="deleteAttach">Delete</a>
+            <Button
+             size="small"
+             type="text"
+             icon="md-trash"
+             @click="deleteAttach"
+             />
           </Tooltip>
-        </Col>
+        </span>
       </template>
-    </Row>
-  </FormItem>
+  </span>
 </template>
 
 <script>
