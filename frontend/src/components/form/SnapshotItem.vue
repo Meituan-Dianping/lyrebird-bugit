@@ -21,8 +21,7 @@
              icon="md-checkmark"
              style="margin-right:2px"
              @click="saveName"
-             >
-            </Button>
+             />
           </Tooltip>
           <Tooltip content="Cancel" placement="top">
             <Button
@@ -30,8 +29,7 @@
               type="text"
               icon="md-close"
               @click="cancelRename"
-              >
-            </Button>
+              />
           </Tooltip>
         </span>
       </template>
@@ -49,8 +47,7 @@
              icon="md-open"
              style="margin-right:2px"
              @click="displayAttach"
-             >
-            </Button>
+             />
           </Tooltip>
           <Tooltip content="Rename" placement="top">
             <Button
@@ -59,8 +56,7 @@
              icon="md-create"
              style="margin-right:2px"
              @click="rename"
-             >
-            </Button>
+             />
           </Tooltip>
           <Tooltip content="Delete" placement="top">
             <Button
@@ -68,8 +64,7 @@
              type="text"
              icon="md-trash"
              @click="deleteAttach"
-             >
-            </Button>
+             />
           </Tooltip>
         </span>
       </template>
