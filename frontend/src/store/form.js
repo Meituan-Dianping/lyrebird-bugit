@@ -13,7 +13,7 @@ export default {
     formValue: {},
     attachmentsList: [],
     inEditModeAttachments: [],
-    snapshotList: [],
+    exportAttachmentList: [],
     loadAttachmentCount: 0,
     shownFileName: null,
     submitLock: false,
@@ -116,22 +116,22 @@ export default {
     setAttachmentEditMode (state, { index, mode }) {
       state.attachmentsList[index].editMode = mode
     },
-    addSnapshot (state, snapshot) {
-      let fileName = 'snapshot_' + snapshot.id
-      state.snapshotList.push({
-        'name': fileName,
-        'editMode': false,
-        'eventObj': snapshot
+    addExportAttachment (state, { attachmentName, attachmentObj, attachmentType }) {
+      state.exportAttachmentList.push({
+        'name': attachmentName,
+        'eventObj': attachmentObj,
+        'attachmentType': attachmentType,
+        'editMode': false
       })
     },
-    deleteSnapshot (state, index) {
-      state.snapshotList.splice(index, 1)
+    deleteExportAttachment (state, index) {
+      state.exportAttachmentList.splice(index, 1)
     },
-    setSnapshotName (state, { index, newName }) {
-      state.snapshotList[index].name = newName
+    setExportAttachmentName (state, { index, baseName }) {
+      state.exportAttachmentList[index].name = baseName
     },
-    setSnapshotEditMode (state, { index, mode }) {
-      state.snapshotList[index].editMode = mode
+    setExportAttachmentEditMode (state, { index, mode }) {
+      state.exportAttachmentList[index].editMode = mode
     }
   },
   actions: {
@@ -206,7 +206,7 @@ export default {
       bus.$emit('message', 'Submitting issue ...')
       commit('setSubmitLock', true)
       api.createIssue(state.templates[state.selectedTemplateIndex], state.templateDetail,
-        state.attachmentsList, state.snapshotList)
+        state.attachmentsList, state.exportAttachmentList)
         .then(response => {
           bus.$emit('message', response.data)
           commit('setSubmitLock', false)
@@ -234,6 +234,9 @@ export default {
       if (!name || name.trim().length === 0) {
         return Promise.reject('File name cannot be empty')
       }
+      if (name.trim().length > 255) {
+        return Promise.reject('File name is too long (255 characters limited)')
+      }
       for (const i in state.illegalChars) {
         if (name.indexOf(state.illegalChars[i]) > -1) {
           return Promise.reject(`Illegal character [${state.illegalChars[i]}] in file name.`)
@@ -243,7 +246,11 @@ export default {
     },
     isNameNotExists ({ state }, { name, sourceList, index }) {
       for (let i in sourceList) {
-        if (sourceList[i].name.toLowerCase() === name.toLowerCase() && i.toString() !== index.toString()) {
+        let fullName = sourceList[i].name
+        if (sourceList[i].hasOwnProperty('attachmentType')) {
+          fullName += `.${sourceList[i].attachmentType}`
+        }
+        if (fullName.toLowerCase() === name.toLowerCase() && i.toString() !== index.toString()) {
           return Promise.reject('A file with the same name exists')
         }
       }
@@ -251,7 +258,7 @@ export default {
     },
     renameAttachment ({ state, commit, dispatch }, { index, baseName, extensionName }) {
       dispatch('isNameValid', baseName).then(() => {
-        let newName = `${baseName}.${extensionName}`
+        let newName = `${baseName.trim()}.${extensionName}`
         dispatch('isNameNotExists', {
           name: newName,
           sourceList: state.attachmentsList,
@@ -284,24 +291,42 @@ export default {
         bus.$emit('msg.error', `Rename attachment error: ${err}`)
       })
     },
-    renameSnapshot ({ state, commit, dispatch }, { index, newName }) {
-      dispatch('isNameValid', newName).then(() => {
+    addExportAttachment ({ state, commit, dispatch }, { attachmentName, attachmentObj, attachmentType }) {
+      let fullName = `${attachmentName.trim()}.${attachmentType}`
+      if (fullName.trim().length > 255) {
+        bus.$emit('msg.error', `Add export attachment error: File name is too long (255 characters limited)`)
+        return
+      }
+      dispatch('isNameNotExists', {
+        name: fullName,
+        sourceList: state.exportAttachmentList,
+        index: -1
+      }).then(() => {
+        commit('addExportAttachment', { attachmentName, attachmentObj, attachmentType })
+      }).catch(err => {
+        let newBaseName = `${attachmentName.trim()} copy`
+        dispatch('addExportAttachment', { attachmentName: newBaseName, attachmentObj, attachmentType })
+      })
+    },
+    renameExportAttachment ({ state, commit, dispatch }, { index, baseName, extensionName }) {
+      dispatch('isNameValid', baseName).then(() => {
+        let newName = `${baseName.trim()}.${extensionName}`
         dispatch('isNameNotExists', {
           name: newName,
-          sourceList: state.snapshotList,
+          sourceList: state.exportAttachmentList,
           index: index
         }).then(() => {
-          commit('setSnapshotName', { index, newName })
-          commit('setSnapshotEditMode', {
+          commit('setExportAttachmentName', { index, baseName })
+          commit('setExportAttachmentEditMode', {
             index: index,
             mode: false
           })
-          bus.$emit('msg.success', `Rename snapshot to [${newName}] success!`)
+          bus.$emit('msg.success', `Rename attachment to [${newName}] success!`)
         }).catch(err => {
-          bus.$emit('msg.error', `Rename snapshot to [${newName}] error: ${err}`)
+          bus.$emit('msg.error', `Rename attachment to [${newName}] error: ${err}`)
         })
       }).catch(err => {
-        bus.$emit('msg.error', `Rename snapshot error: ${err}`)
+        bus.$emit('msg.error', `Rename attachment error: ${err}`)
       })
     },
     saveCache ({ state, dispatch, commit }) {

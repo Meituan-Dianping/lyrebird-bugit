@@ -80,13 +80,18 @@ def issue():
 
     issue_data = issue_req['issue']
     attachments = issue_req['attachments']
-    snapshots = issue_req['snapshots']
+    export_attachments = issue_req['exportAttachments']
 
     all_bugit_message = ''
 
-    # Export Snapshot
-    for snapshot in snapshots:
-        attachments.append(attachment.export_snapshot(snapshot))
+    # Export Snapshot/Json/... attachment files
+    for attachment_item in export_attachments:
+        if attachment_item.get('attachmentType') == 'lb':
+            # Export Snapshot
+            attachments.append(attachment.export_snapshot(attachment_item))
+        else:
+            # Export to specified file
+            attachments.append(attachment.export_attachment_file(attachment_item))
     # Set bugit script context
     context = {'issue': issue_data, 'attachments': attachments}
     # Set submit actions
