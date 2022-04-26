@@ -85,13 +85,19 @@ def issue():
     all_bugit_message = ''
 
     # Export Snapshot/Json/... attachment files
+    export_fail_attachments = []
     for attachment_item in export_attachments:
         if attachment_item.get('attachmentType') == 'lb':
             # Export Snapshot
             attachments.append(attachment.export_snapshot(attachment_item))
         else:
             # Export to specified file
-            attachments.append(attachment.export_attachment_file(attachment_item))
+            export_result, file_item = attachment.export_attachment_file(attachment_item)
+            if export_result:
+                attachments.append(file_item)
+            else:
+                export_fail_attachments.append(file_item['name'])
+
     # Set bugit script context
     context = {'issue': issue_data, 'attachments': attachments}
     # Set submit actions
@@ -125,7 +131,10 @@ def issue():
     })
     #Delete Snapshot
     attachment.remove_attach()
-    return application.make_ok_response(message=f'Create issue success! {all_bugit_message}')
+    return application.make_ok_response(
+        message=f'Create issue success! {all_bugit_message}',
+        export_fail_attachments=export_fail_attachments
+    )
 
 
 def take_screenshot(platform, device_id):

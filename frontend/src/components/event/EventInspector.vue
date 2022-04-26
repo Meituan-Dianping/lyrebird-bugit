@@ -188,12 +188,13 @@ export default {
       }
       if (eventObj.export) {
         // Export to attachment with a specified type.
-        if (eventObj.export.hasOwnProperty('attachment')) {
+        if (eventObj.export.hasOwnProperty('converter')) {
           let fileName = `${eventObj.channel}_${eventObj.id}`
           this.$bus.$emit('addExportAttachments', {
             attachmentName: fileName,
             attachmentObj: eventObj,
-            attachmentType: eventObj.export.attachment
+            // TODO: How to get other type's of file
+            attachmentType: 'json'
           })
         }
       }

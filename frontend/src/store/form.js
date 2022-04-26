@@ -208,10 +208,14 @@ export default {
       api.createIssue(state.templates[state.selectedTemplateIndex], state.templateDetail,
         state.attachmentsList, state.exportAttachmentList)
         .then(response => {
-          bus.$emit('message', response.data)
+          for (let failAttach of response.data.export_fail_attachments) {
+            let extensionName = String(failAttach.split('.').slice(-1))
+            bus.$emit('msg.error', `Add ${failAttach} to attachment error: cannot convert data to a ${extensionName} file.`)
+          }
+          bus.$emit('message', response.data.message)
           commit('setSubmitLock', false)
         }).catch(response => {
-          bus.$emit('message', response.data)
+          bus.$emit('message', response.data.message)
           commit('setSubmitLock', false)
         })
     },
@@ -232,14 +236,14 @@ export default {
     },
     isNameValid ({ state }, name) {
       if (!name || name.trim().length === 0) {
-        return Promise.reject('File name cannot be empty')
+        return Promise.reject(new Error('File name cannot be empty'))
       }
       if (name.trim().length > 255) {
-        return Promise.reject('File name is too long (255 characters limited)')
+        return Promise.reject(new Error('File name is too long (255 characters limited)'))
       }
       for (const i in state.illegalChars) {
         if (name.indexOf(state.illegalChars[i]) > -1) {
-          return Promise.reject(`Illegal character [${state.illegalChars[i]}] in file name.`)
+          return Promise.reject(new Error(`Illegal character [${state.illegalChars[i]}] in file name.`))
         }
       }
       return Promise.resolve()
@@ -251,7 +255,7 @@ export default {
           fullName += `.${sourceList[i].attachmentType}`
         }
         if (fullName.toLowerCase() === name.toLowerCase() && i.toString() !== index.toString()) {
-          return Promise.reject('A file with the same name exists')
+          return Promise.reject(new Error('A file with the same name exists'))
         }
       }
       return Promise.resolve()
@@ -285,10 +289,10 @@ export default {
               bus.$emit('msg.error', response.data)
             })
         }).catch(err => {
-          bus.$emit('msg.error', `Rename attachment to [${newName}] error: ${err}`)
+          bus.$emit('msg.error', `Rename attachment to [${newName}] ${err}`)
         })
       }).catch(err => {
-        bus.$emit('msg.error', `Rename attachment error: ${err}`)
+        bus.$emit('msg.error', `Rename attachment ${err}`)
       })
     },
     addExportAttachment ({ state, commit, dispatch }, { attachmentName, attachmentObj, attachmentType }) {
@@ -303,7 +307,7 @@ export default {
         index: -1
       }).then(() => {
         commit('addExportAttachment', { attachmentName, attachmentObj, attachmentType })
-      }).catch(err => {
+      }).catch(() => {
         let newBaseName = `${attachmentName.trim()} copy`
         dispatch('addExportAttachment', { attachmentName: newBaseName, attachmentObj, attachmentType })
       })
@@ -323,10 +327,10 @@ export default {
           })
           bus.$emit('msg.success', `Rename attachment to [${newName}] success!`)
         }).catch(err => {
-          bus.$emit('msg.error', `Rename attachment to [${newName}] error: ${err}`)
+          bus.$emit('msg.error', `Rename attachment to [${newName}] ${err}`)
         })
       }).catch(err => {
-        bus.$emit('msg.error', `Rename attachment error: ${err}`)
+        bus.$emit('msg.error', `Rename attachment ${err}`)
       })
     },
     saveCache ({ state, dispatch, commit }) {

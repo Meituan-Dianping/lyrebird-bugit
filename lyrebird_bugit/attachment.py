@@ -1,8 +1,6 @@
 from pathlib import Path
 import os
 import codecs
-import json
-from uuid import uuid4
 import lyrebird
 import requests
 import shutil
@@ -37,14 +35,19 @@ def export_snapshot(snapshot):
 
 def export_attachment_file(attachment_obj):
     _check_dir()
+    full_name = f'{attachment_obj.get("name", "")}.{attachment_obj.get("attachmentType", "json")}'
     res = requests.post(EVENT_EXPORT_URL, json=attachment_obj['eventObj'], stream=True)
+    if res.json().get('code', 1000) == 3000:
+        return False, {
+            'name': full_name,
+            'path': str(ATTACHMENT_ROOT / full_name)
+        }
     # EventFileId is unique id of event file
     id_ = res.headers.get('EventFileId')
-    full_name = f'{attachment_obj.get("name", "")}.{attachment_obj.get("attachmentType", "json")}'
     with codecs.open(str(ATTACHMENT_ROOT / full_name), 'wb') as f:
         for chunk in res.iter_content():
             f.write(chunk)
-    return {
+    return True, {
         'id': id_,
         'name': full_name,
         'path': str(ATTACHMENT_ROOT / full_name)
