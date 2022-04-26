@@ -215,7 +215,7 @@ export default {
           bus.$emit('message', response.data.message)
           commit('setSubmitLock', false)
         }).catch(response => {
-          bus.$emit('message', response.data.message)
+          bus.$emit('message', response.data)
           commit('setSubmitLock', false)
         })
     },

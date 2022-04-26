@@ -42,7 +42,6 @@ def export_attachment_file(attachment_obj):
             'name': full_name,
             'path': str(ATTACHMENT_ROOT / full_name)
         }
-    # EventFileId is unique id of event file
     id_ = res.headers.get('EventFileId')
     with codecs.open(str(ATTACHMENT_ROOT / full_name), 'wb') as f:
         for chunk in res.iter_content():
