@@ -92,10 +92,11 @@ def issue():
             attachments.append(attachment.export_snapshot(attachment_item))
         else:
             # Export to specified file
-            export_result, file_item = attachment.export_attachment_file(attachment_item)
-            if export_result:
+            file_item = attachment.export_attachment_file(attachment_item)
+            if 'id' in file_item:
                 attachments.append(file_item)
             else:
+                # export fail item do not have 'id' key
                 export_fail_attachments.append(file_item['name'])
 
     # Set bugit script context

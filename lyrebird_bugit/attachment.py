@@ -4,6 +4,7 @@ import codecs
 import lyrebird
 import requests
 import shutil
+from uuid import uuid4
 from lyrebird.application import config
 
 BUGIT_STORAGE = lyrebird.get_plugin_storage()
@@ -38,16 +39,15 @@ def export_attachment_file(attachment_obj):
     full_name = f'{attachment_obj.get("name", "")}.{attachment_obj.get("attachmentType", "json")}'
     res = requests.post(EVENT_EXPORT_URL, json=attachment_obj['eventObj'], stream=True)
     if res.json().get('code', 1000) == 3000:
-        return False, {
+        return {
             'name': full_name,
             'path': str(ATTACHMENT_ROOT / full_name)
         }
-    id_ = res.headers.get('EventFileId')
     with codecs.open(str(ATTACHMENT_ROOT / full_name), 'wb') as f:
         for chunk in res.iter_content():
             f.write(chunk)
-    return True, {
-        'id': id_,
+    return {
+        'id': str(uuid4()),
         'name': full_name,
         'path': str(ATTACHMENT_ROOT / full_name)
     }
