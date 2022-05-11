@@ -13,7 +13,7 @@
           :src="'/plugins/bugit/api/attachments/' + this.attachmentId"
         />
       </p>
-      <p v-else-if="isSnapshot">
+      <p v-else-if="isJson">
         <CodeEditor read-only language="json" v-model="this.attachmentContent" style="height:500px"/>
       </p>
       <p v-else>
@@ -22,7 +22,7 @@
     </div>
     <div slot="footer">
       <p v-if="isImageFile">
-        <Button long type="success" @click="saveImage()">Save</Button>
+        <Button long type="success" @click="saveImage">Save</Button>
       </p>
       <p v-else>
         <Button long style="background-color:#dcdee2" @click="isDisplayFile = false">Close</Button>
@@ -65,7 +65,7 @@ export default {
 
       return imageFileSuffix.indexOf(nameSuffix) > -1
     },
-    isSnapshot () {
+    isJson () {
       if (this.attachmentContent) {
         this.attachmentContent = JSON.stringify(this.attachmentContent, null, 2)
         return true

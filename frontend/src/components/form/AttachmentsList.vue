@@ -5,9 +5,9 @@
         <AttachmentItem :attachment="attachment" :index="index"/>
       </p>
     </div>
-    <div v-if="snapshots.length">
-      <p v-for="(snapshot, index) in snapshots" :key="index" class="attachment-line">
-        <SnapshotItem :snapshot="snapshot" :index="index"/>
+    <div v-if="exportAttachments.length">
+      <p v-for="(exportAttachment, index) in exportAttachments" :key="index" class="attachment-line">
+        <ExportAttachmentItem :exportAttachment="exportAttachment" :index="index"/>
       </p>
     </div>
     <Upload
@@ -30,33 +30,32 @@
 
 <script>
 import AttachmentItem from '@/components/form/AttachmentItem.vue'
-import SnapshotItem from '@/components/form/SnapshotItem.vue'
+import ExportAttachmentItem from '@/components/form/ExportAttachmentItem.vue'
 
 export default {
   components: {
     AttachmentItem,
-    SnapshotItem
+    ExportAttachmentItem
   },
   created () {
     this.$io.on('attachments', this.addAttachment)
-    this.$bus.$on('addAttachments', this.addAttachment)
-    this.$bus.$on('addSnapshot', this.addSnapshot)
+    this.$bus.$on('addExportAttachments', this.addExportAttachment)
     this.$store.dispatch('loadAttachment')
   },
   computed: {
     attachments () {
       return this.$store.state.form.attachmentsList
     },
-    snapshots () {
-      return this.$store.state.form.snapshotList
+    exportAttachments () {
+      return this.$store.state.form.exportAttachmentList
     }
   },
   methods: {
     addAttachment () {
       this.$store.dispatch('loadAttachment')
     },
-    addSnapshot (snapshot) {
-      this.$store.commit('addSnapshot', snapshot)
+    addExportAttachment (exportAttachment) {
+      this.$store.dispatch('addExportAttachment', exportAttachment)
     }
   }
 }

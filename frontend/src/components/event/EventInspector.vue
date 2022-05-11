@@ -179,10 +179,24 @@ export default {
         })
       }
       if (eventObj.snapshot) {
-        this.$bus.$emit('addSnapshot', eventObj)
+        let fileName = `snapshot_${eventObj.id}`
+        this.$bus.$emit('addExportAttachments', {
+          attachmentName: fileName,
+          attachmentObj: eventObj,
+          attachmentType: 'lb'
+        })
       }
-      if (eventObj.attachments) {
-        this.$bus.$emit('addAttachments', eventObj.attachments)
+      if (eventObj.export) {
+        // Export to attachment with a specified type.
+        if (eventObj.export.hasOwnProperty('converter')) {
+          let fileName = `${eventObj.channel}_${eventObj.id}`
+          this.$bus.$emit('addExportAttachments', {
+            attachmentName: fileName,
+            attachmentObj: eventObj,
+            // TODO: How to get other type's of file
+            attachmentType: 'json'
+          })
+        }
       }
     },
     showContextMenu (event) {

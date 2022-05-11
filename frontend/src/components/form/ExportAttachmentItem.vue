@@ -2,7 +2,9 @@
   <span class="attachment-item">
       <template v-if="editMode">
         <span class="attachment-name">
-          <Input style="padding-right:3px" v-model="name" size="small" type="text" />
+          <Input style="padding-right:3px" v-model="baseName" size="small" type="text">
+            <span slot="append">.{{extensionName}}</span>
+          </Input>
         </span>
         <span class="attachment-actions">
           <Tooltip content="Preview" placement="top">
@@ -73,19 +75,23 @@
 
 <script>
 export default {
-  props: ['snapshot', 'index'],
+  props: ['exportAttachment', 'index'],
   data () {
     return {
-      'name': this.snapshot.name
+      'baseName': this.exportAttachment.name,
+      'extensionName': this.exportAttachment.attachmentType
     }
   },
   computed: {
+    name () {
+      return `${this.baseName}.${this.extensionName}`
+    },
     editMode: {
       get () {
-        return this.$store.state.form.snapshotList[this.index].editMode
+        return this.$store.state.form.exportAttachmentList[this.index].editMode
       },
       set (val) {
-        this.$store.commit('setSnapshotEditMode', {
+        this.$store.commit('setExportAttachmentEditMode', {
           index: this.index,
           mode: val
         })
@@ -94,22 +100,23 @@ export default {
   },
   methods: {
     deleteAttach () {
-      this.$store.commit('deleteSnapshot', this.index)
+      this.$store.commit('deleteExportAttachment', this.index)
     },
     displayAttach () {
-      this.$bus.$emit('displayAttach', this.snapshot)
+      this.$bus.$emit('displayAttach', this.exportAttachment)
     },
     rename () {
       this.editMode = true
     },
     cancelRename () {
-      this.name = this.snapshot.name
+      this.baseName = this.exportAttachment.name
       this.editMode = false
     },
     saveName () {
-      this.$store.dispatch('renameSnapshot', {
+      this.$store.dispatch('renameExportAttachment', {
         index: this.index,
-        newName: this.name
+        baseName: this.baseName,
+        extensionName: this.extensionName
       })
     }
   }
