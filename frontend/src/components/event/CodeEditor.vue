@@ -49,7 +49,8 @@ export default {
         value: this.content,
         language: this.language,
         theme: 'vs',
-        readOnly: this.readOnly
+        readOnly: this.readOnly,
+        automaticLayout: true
       }
     )
     this.editor.addAction({

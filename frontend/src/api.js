@@ -35,6 +35,9 @@ export const getEvent = (options) => {
   } else if (options && options.hasOwnProperty('page') && options.page) {
     url += '/page/' + options.page
   }
+  if (options.searchStr && options.searchStr.trim()) {
+    url += '/search/' + options.searchStr.trim().split(/\s+/).join('+')
+  }
   return axios({
     url: url
   })

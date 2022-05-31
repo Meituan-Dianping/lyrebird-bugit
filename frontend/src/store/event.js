@@ -9,7 +9,8 @@ export default {
     loadingEvents: false,
     selectedEventId: null,
     eventDetail: '',
-    page: null
+    page: null,
+    searchStr: ''
   },
   mutations: {
     setChannelNames (state, channelNames) {
@@ -32,6 +33,9 @@ export default {
     },
     setPage (state, page) {
       state.page = page
+    },
+    setSearchStr (state, searchStr) {
+      state.searchStr = searchStr
     }
   },
   actions: {
@@ -51,7 +55,12 @@ export default {
         eventId = state.selectedEventId
       }
       commit('setLoadingEvents', true)
-      api.getEvent({ channelFilters: state.channelFilters, eventId: eventId, page: options.page }).then(response => {
+      api.getEvent({
+        channelFilters: state.channelFilters,
+        eventId: eventId,
+        page: options.page,
+        searchStr: state.searchStr
+      }).then(response => {
         if (response.data.code === 1000) {
           let events = response.data.events
           if (eventId) {

@@ -80,7 +80,8 @@ export default {
       tableRect: null,
       isContextMenuShown: false,
       contextMenuLeft: 0,
-      contextMenuTop: 0
+      contextMenuTop: 0,
+      refreshEventListTimer: null
     }
   },
   computed: {
@@ -130,6 +131,23 @@ export default {
           slot: 'content'
         }
       ]
+    },
+    searchStr () {
+      return this.$store.state.event.searchStr
+    }
+  },
+  watch: {
+    searchStr (newValue, oldValue) {
+      if (newValue === null) {
+        newValue = ''
+      }
+      clearTimeout(this.refreshEventListTimer)
+      this.refreshEventListTimer = setTimeout(() => {
+        if (newValue.trim() !== oldValue.trim()) {
+          this.$store.dispatch('loadEvents')
+          clearTimeout(this.refreshEventListTimer)
+        }
+      }, 500)
     }
   },
   methods: {

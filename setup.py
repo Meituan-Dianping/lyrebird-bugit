@@ -8,7 +8,7 @@ with open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='lyrebird-bugit',
-    version='1.11.0',
+    version='1.12.0',
     packages=['lyrebird_bugit'],
     url='https://github.com/Meituan-Dianping/lyrebird-bugit',
     author='HBQA',
