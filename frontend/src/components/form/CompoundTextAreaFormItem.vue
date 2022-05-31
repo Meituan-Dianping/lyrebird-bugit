@@ -22,17 +22,17 @@ export default {
   components: {
     MovableDescription
   },
-  created() {
+  created () {
     this.$bus.$on('addMessage', this.addDesc)
   },
   methods: {
-    addDesc(desc) {
+    addDesc (desc) {
       this.$store.commit('addExtraMsg', { index: this.index, value: desc })
     },
-    deleteDesc(index) {
+    deleteDesc (index) {
       this.$store.commit('deleteExtraMsg', { index, propsIndex: this.index })
     },
-    sortDesc(index) {
+    sortDesc (index) {
       this.$store.dispatch('setExtraMsgUpward', { index, propsIndex: this.index })
     }
   },

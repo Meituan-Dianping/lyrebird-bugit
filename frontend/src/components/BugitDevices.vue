@@ -1,15 +1,15 @@
 <template>
-  <div class="split-right-bar">
-    <p style="line-height:28px;vertical-align:middle;">
+  <Row class="split-right-bar">
+    <i-col span="14">
       <span style="padding-left:10px;padding-right:10px">
         <b>Devices:</b>
       </span>
       <span v-if="noneDevices">
-        <b>N/A - Please connect your phone to your computer using a USB cable</b>
+        No devices
       </span>
       <span v-for="(device, index) in devicesInfo" :key="index" class="device-btn-group">
         <a @click="addDevice(device)" class="device-btn">
-          <Tooltip max-width="400" placement="bottom-end">
+          <Tooltip max-width="400" placement="bottom-end" transfer>
             <span>
               <Icon v-if="device.platform === 'Android'" type="logo-android"/>
               <Icon v-else type="logo-apple"/>
@@ -29,14 +29,19 @@
           </Tooltip>
         </a>
         <a class="screenshot-btn" @click="takeScreenshot(device)">
-          <Tooltip placement="bottom-end">
+          <Tooltip placement="bottom-end" transfer>
             <Icon type="md-images"/>
             <div slot="content">Take a screenshot</div>
           </Tooltip>
         </a>
       </span>
-    </p>
-  </div>
+    </i-col>
+    <i-col span="10" style="padding-right: 10px;">
+      <span>
+        <Input v-model="searchStr" prefix="ios-search" placeholder="Separate multiple keywords by spaces" size="small" type="text" style="vertical-align: baseline;" clearable />
+      </span>
+    </i-col>
+  </Row>
 </template>
 
 <script>
@@ -56,6 +61,14 @@ export default {
     },
     noneDevices () {
       return this.devicesInfo === null || this.devicesInfo.length === 0
+    },
+    searchStr: {
+      get () {
+        return this.$store.state.event.searchStr
+      },
+      set (val) {
+        this.$store.commit('setSearchStr', val)
+      }
     }
   },
   methods: {
@@ -84,11 +97,12 @@ export default {
 
 <style scoped>
 .split-right-bar {
-  height: 28px;
+  height: 32px;
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
   border-bottom: 1px solid #dcdee2;
+  line-height: 32px;
 }
 .device-btn-group {
   margin: 2px 2px;

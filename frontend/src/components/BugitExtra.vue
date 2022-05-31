@@ -20,18 +20,18 @@ export default {
     EventInspector,
     CodeEditor
   },
-  data() {
+  data () {
     return {
       detailSplit: 0.6,
       scrollRate: 0
     }
   },
-  created() {
+  created () {
     this.$bus.$on('eventLitScroll', this.setEventContainerScroll)
   },
   computed: {
     eventDetail: {
-      get() {
+      get () {
         return this.$store.state.event.eventDetail
       },
       set(val) {
@@ -40,7 +40,7 @@ export default {
     }
   },
   methods: {
-    addDescAttach(row) {
+    addDescAttach (row) {
       if (this.channelAddToDesc.indexOf(row.channel) > -1) {
         this.dispatch('addIntoDesc', row.id)
       } else if (this.channelAddToAttach.indexOf(row.channel) > -1) {
@@ -50,7 +50,7 @@ export default {
         'Add description and attachments have not supported yet!'
       )
     },
-    timestampToTime(timeStamp) {
+    timestampToTime (timeStamp) {
       let date = new Date(timeStamp * 1000)
       let hour = date.getHours() + ':'
       let minute =
@@ -60,10 +60,10 @@ export default {
         date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()
       return hour + minute + second
     },
-    getColunmsFilterItem() {
+    getColunmsFilterItem () {
       return []
     },
-    setEventContainerScroll(event) {
+    setEventContainerScroll (event) {
       this.scrollRate = event
       setTimeout(() => {
         const container = this.$refs.eventContainer
