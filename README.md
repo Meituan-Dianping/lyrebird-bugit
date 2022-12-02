@@ -28,7 +28,7 @@ BugIt是一个[Lyrebird](https://github.com/Meituan-Dianping/lyrebird)插件。
 
 - macOS OR Linux
 
-- Python3.6及以上
+- Python3.7及以上
 
 - Lyrebird 1.6及以上
 ## 安装
@@ -108,7 +108,7 @@ BugIt支持自动填充Lyrebird运行过程中抓取到的数据信息。
 
 BugIt通过模板定义UI以及提交的行为。通过不同的模板支持JIRA以及其他的Bug管理系统。
 
-BugIt模板是一个Python文件，要求使用Python3.6及以上的版本编写。
+BugIt模板是一个Python文件，要求使用Python3.7及以上的版本编写。
 ![BugIt 脚本工作原理示意图](./image/bugit_callback.png)
 配置脚本需包含以下三部分
 - init配置文件
