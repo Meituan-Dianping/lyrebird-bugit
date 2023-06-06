@@ -1,5 +1,8 @@
 <template>
-  <FormItem :label="data.name" :required="isRequired">
+  <FormItem :required="isRequired">
+    <template v-slot:label>
+      <FormItemLabel :label="data.name"/>
+    </template>
     <div>
       <Select size="small" :clearable="!data.required" :multiple="data.multiple"
       v-model="formItemData" filterable :placeholder="placeholder">
@@ -14,7 +17,12 @@
 </template>
 
 <script>
+import FormItemLabel from '@/components/form/FormItemLabel.vue'
+
 export default {
+  components: {
+    FormItemLabel
+  },
   props: ['data', 'index'],
   computed: {
     formItemData: {
