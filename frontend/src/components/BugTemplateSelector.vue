@@ -2,7 +2,7 @@
   <Form :label-width="80" class="split-left-template-selector">
     <Row>
       <i-col span="12">
-        <FormItem label="template">
+        <FormItem label="Template">
           <Select
             v-model="selectedTemplateIndex"
             filterable

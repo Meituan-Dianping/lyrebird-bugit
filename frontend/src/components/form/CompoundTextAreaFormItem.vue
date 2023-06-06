@@ -1,5 +1,8 @@
 <template>
-  <FormItem :label="data.name" :required="isRequired">
+  <FormItem :required="isRequired">
+    <template v-slot:label>
+      <FormItemLabel :label="data.name"/>
+    </template>
     <div style="background:#eee;padding:10px">
       <Input
         type="textarea"
@@ -16,11 +19,13 @@
 
 <script>
 import MovableDescription from '@/components/form/MovableDescription.vue'
+import FormItemLabel from '@/components/form/FormItemLabel.vue'
 
 export default {
   props: ['data', 'index'],
   components: {
-    MovableDescription
+    MovableDescription,
+    FormItemLabel
   },
   created () {
     this.$bus.$on('addMessage', this.addDesc)
