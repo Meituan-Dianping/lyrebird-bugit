@@ -15,11 +15,17 @@
         </FormItem>
       </i-col>
       <i-col span="12">
-        <FormItem label="Draft">
+        <FormItem>
+          <template slot="label">
+            <Tooltip content="Clear current draft" placement="bottom" :delay="500">
+              <a>
+                <Icon class="clear-icon" type="md-refresh" @click="onClear" />
+              </a>
+            </Tooltip><span>Draft</span>
+          </template>
           <Select
             v-model="selectedDraft"
             filterable
-            clearable
             size="small"
             placeholder="Select a saved draft"
             not-found-text="No Template"
@@ -28,12 +34,12 @@
               v-for="(template, index) in cacheList"
               :value="template.cacheName"
               :key="index"
+              class="draft-option"
             >{{template.cacheName}}<Icon
-                v-show="template.cacheName===selectedCache"
-                class="icon-form"
-                style="float: right"
-                type="md-trash"
-                @click="isShownDeleteModal = true"
+              v-show="template.cacheName===selectedCache"
+              class="delete-icon"
+              type="md-trash"
+              @click="isShownDeleteModal = true"
               />
             </Option>
           </Select>
@@ -71,6 +77,10 @@ export default {
     onDelete () {
       this.$store.dispatch('deleteCache', this.selectedCache)
       this.isShownDeleteModal = false
+    },
+    onClear () {
+      this.$store.commit('setSelectedCache', '')
+      this.$store.dispatch('loadTemplate')
     }
   },
   computed: {
@@ -114,5 +124,14 @@ export default {
 .split-left-template-selector .ivu-form-item {
   margin-bottom: 0px;
   padding-bottom: 5px;
+}
+.clear-icon {
+  font-size: medium;
+}
+.draft-option {
+  white-space: normal;
+}
+.delete-icon {
+  position: absolute;
 }
 </style>
