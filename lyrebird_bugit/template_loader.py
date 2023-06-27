@@ -15,7 +15,7 @@ def get_workspace():
     if bugit_workspace and Path(bugit_workspace).exists():
         return Path(bugit_workspace)
 
-    ROOT = application._cm.root
+    ROOT = application._cm.ROOT
     metadata_dir = ROOT/'downloads'/'lyrebird_bugit'
     metadata_dir.mkdir(parents=True, exist_ok=True)
     logger.warning(

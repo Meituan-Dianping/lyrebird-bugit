@@ -8,7 +8,7 @@
             filterable
             size="small"
             placeholder="Select template"
-            not-found-text="No saved draft"
+            not-found-text="No Template"
           >
             <Option v-for="(template, index) in templates" :value="index" :key="index">{{ template.name }}</Option>
           </Select>
@@ -22,18 +22,18 @@
             clearable
             size="small"
             placeholder="Select a saved draft"
-            not-found-text="No Template"
+            not-found-text="No saved draft"
           >
             <Option
               v-for="(template, index) in cacheList"
               :value="template.cacheName"
               :key="index"
+              class="draft-option"
             >{{template.cacheName}}<Icon
-                v-show="template.cacheName===selectedCache"
-                class="icon-form"
-                style="float: right"
-                type="md-trash"
-                @click="isShownDeleteModal = true"
+              v-show="template.cacheName===selectedCache"
+              class="delete-icon"
+              type="md-trash"
+              @click="isShownDeleteModal = true"
               />
             </Option>
           </Select>
@@ -114,5 +114,14 @@ export default {
 .split-left-template-selector .ivu-form-item {
   margin-bottom: 0px;
   padding-bottom: 5px;
+}
+.draft-option {
+  white-space: normal;
+  position: relative;
+}
+.delete-icon {
+  position: absolute;
+  bottom: 10px;
+  margin: auto;
 }
 </style>

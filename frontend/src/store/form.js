@@ -208,14 +208,16 @@ export default {
       api.createIssue(state.templates[state.selectedTemplateIndex], state.templateDetail,
         state.attachmentsList, state.exportAttachmentList)
         .then(response => {
-          for (let failAttach of response.data.export_fail_attachments) {
-            let extensionName = String(failAttach.split('.').slice(-1))
-            bus.$emit('msg.error', `Add ${failAttach} to attachment error: cannot convert data to a ${extensionName} file.`)
+          if (response.data.code === 1000) {
+            for (let failAttach of response.data.export_fail_attachments) {
+              let extensionName = String(failAttach.split('.').slice(-1))
+              bus.$emit('msg.error', `Add ${failAttach} to attachment error: cannot convert data to a ${extensionName} file.`)
+            }
           }
-          bus.$emit('message', response.data.message)
-          commit('setSubmitLock', false)
-        }).catch(response => {
           bus.$emit('message', response.data)
+          commit('setSubmitLock', false)
+        }).catch(error => {
+          bus.$emit('msg.error', 'Submit failed error: ' + error.message)
           commit('setSubmitLock', false)
         })
     },
@@ -363,8 +365,9 @@ export default {
         .then(response => {
           if (response.data.code === 1000) {
             bus.$emit('msg.success', 'Delete success!')
-            commit('setSelectedCache', state.selectedCache)
+            commit('setSelectedCache', null)
             dispatch('loadCacheList')
+            dispatch('loadTemplate')
           } else {
             bus.$emit('msg.error', 'Delete failed error: ' + response.data.message)
           }

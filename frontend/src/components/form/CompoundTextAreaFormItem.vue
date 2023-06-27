@@ -30,6 +30,9 @@ export default {
   created () {
     this.$bus.$on('addMessage', this.addDesc)
   },
+  beforeDestroy () {
+    this.$bus.$off('addMessage')
+  },
   methods: {
     addDesc (desc) {
       this.$store.commit('addExtraMsg', { index: this.index, value: desc })
