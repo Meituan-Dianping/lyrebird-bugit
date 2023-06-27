@@ -218,6 +218,7 @@ export default {
           commit('setSubmitLock', false)
         }).catch(error => {
           bus.$emit('msg.error', 'Submit failed error: ' + error.message)
+          commit('setSubmitLock', false)
         })
     },
     loadAttachment ({ state, commit }) {
@@ -364,7 +365,7 @@ export default {
         .then(response => {
           if (response.data.code === 1000) {
             bus.$emit('msg.success', 'Delete success!')
-            commit('setSelectedCache', '')
+            commit('setSelectedCache', null)
             dispatch('loadCacheList')
             dispatch('loadTemplate')
           } else {

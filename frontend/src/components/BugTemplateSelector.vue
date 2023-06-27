@@ -71,10 +71,6 @@ export default {
     onDelete () {
       this.$store.dispatch('deleteCache', this.selectedCache)
       this.isShownDeleteModal = false
-    },
-    onClear () {
-      this.$store.commit('setSelectedCache', '')
-      this.$store.dispatch('loadTemplate')
     }
   },
   computed: {
