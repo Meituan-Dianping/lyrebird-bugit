@@ -8,27 +8,21 @@
             filterable
             size="small"
             placeholder="Select template"
-            not-found-text="No saved draft"
+            not-found-text="No Template"
           >
             <Option v-for="(template, index) in templates" :value="index" :key="index">{{ template.name }}</Option>
           </Select>
         </FormItem>
       </i-col>
       <i-col span="12">
-        <FormItem>
-          <template slot="label">
-            <Tooltip content="Clear current draft" placement="bottom" :delay="500">
-              <a>
-                <Icon class="clear-icon" type="md-refresh" @click="onClear" />
-              </a>
-            </Tooltip><span>Draft</span>
-          </template>
+        <FormItem label="Draft">
           <Select
             v-model="selectedDraft"
             filterable
+            clearable
             size="small"
             placeholder="Select a saved draft"
-            not-found-text="No Template"
+            not-found-text="No saved draft"
           >
             <Option
               v-for="(template, index) in cacheList"
@@ -125,13 +119,13 @@ export default {
   margin-bottom: 0px;
   padding-bottom: 5px;
 }
-.clear-icon {
-  font-size: medium;
-}
 .draft-option {
   white-space: normal;
+  position: relative;
 }
 .delete-icon {
   position: absolute;
+  bottom: 10px;
+  margin: auto;
 }
 </style>
