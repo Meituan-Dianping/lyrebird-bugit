@@ -1,6 +1,7 @@
 import json
 import codecs
 import lyrebird
+import os
 from hashlib import md5
 from pathlib import Path
 from packaging import version
@@ -14,8 +15,8 @@ LAST_SELECT_TEMPLATE_FILENAME = 'selected_template'
 BUGIT_SYSTEM_FILENAME = [LAST_SELECT_TEMPLATE_FILENAME]
 DRAFT_INFO_FILE_SUFFIX = '.info'
 DEFAULT_DRAFT_NAME = 'Default'
-DRAFT_VERSION_V_1_7_0 = version.parse('1.7.0')
 DRAFT_VERSION_V_1_8_0 = version.parse('1.8.0')
+DRAFT_VERSION_V_1_12_4 = version.parse('1.12.4')
 
 
 def get(template_key):
@@ -30,8 +31,9 @@ def delete(template_key):
     _delete_cache_from_file(template_key)
 
 
-def get_filename(template_path, draft_name=''):
-    template_key = md5(template_path.encode()).hexdigest()
+def get_filename(abs_template_path, draft_name=''):
+    relative_template_path = abs_template_path.replace(str(Path.home()), '~')
+    template_key = md5(relative_template_path.encode()).hexdigest()
     if not draft_name:
         return f'{template_key}'
 
@@ -39,8 +41,10 @@ def get_filename(template_path, draft_name=''):
     return f'{template_key}_{draft_key}'
 
 
-def selected_template(template_path, cache_name):
-    _save_cache_to_file(LAST_SELECT_TEMPLATE_FILENAME, {'path': template_path, 'cache_name': cache_name})
+def selected_template(abs_template_path, cache_name):
+    relative_template_path = abs_template_path.replace(str(Path.home()), '~')
+    _save_cache_to_file(LAST_SELECT_TEMPLATE_FILENAME, 
+                        {'path': relative_template_path, 'cache_name': cache_name, 'draft_version': '1.12.4'})
 
 
 def get_selected_template():
@@ -79,36 +83,83 @@ def get_draft_list(template_key):
 def check_draft_version():
     _cache = _read_cache_from_file(LAST_SELECT_TEMPLATE_FILENAME)
     if not _cache:
-        return DRAFT_VERSION_V_1_8_0
-    if 'cache_name' in _cache:
-        return DRAFT_VERSION_V_1_8_0
-    return DRAFT_VERSION_V_1_7_0
+        return DRAFT_VERSION_V_1_12_4
+    if 'draft_version' in _cache:
+        return DRAFT_VERSION_V_1_12_4
+    return DRAFT_VERSION_V_1_8_0
 
 
 def update_selected_template():
     _cache = _read_cache_from_file(LAST_SELECT_TEMPLATE_FILENAME)
-    _cache['cache_name'] = DEFAULT_DRAFT_NAME
+    template_path = _cache['path'].replace(str(Path.home()), '~')
+    template_path = _cache['path'].replace('/root', '~')
+    _cache['path'] = template_path
+    if 'cache_name' not in _cache:
+        _cache['cache_name'] = DEFAULT_DRAFT_NAME
+    _cache['draft_version'] = '1.12.4'
     _save_cache_to_file(LAST_SELECT_TEMPLATE_FILENAME, _cache)
 
 
-def update_all_draft_file():
-    cache_key = str(md5(DEFAULT_DRAFT_NAME.encode()).hexdigest())
+def generate_template_keys(templates):
+    if 'HOST_HOME' in os.environ:
+        other_home_path = os.environ['HOST_HOME']
+    else:
+        other_home_path = '/root'
+    
+    old_template_keys = {}
+    new_template_keys = []
+    for index, template in enumerate(templates):
+        template_key = str(md5(template['path'].encode()).hexdigest())
+        old_template_keys[template_key] = index
+        other_absolute_path = template['path'].replace(str(Path.home()), other_home_path)
+        other_template_key = str(md5(other_absolute_path.encode()).hexdigest())
+        old_template_keys[other_template_key] = index
+        relative_path = template['path'].replace(str(Path.home()), '~')
+        new_template_key = str(md5(relative_path.encode()).hexdigest())
+        new_template_keys.append(new_template_key)
+    return old_template_keys, new_template_keys
+
+
+def update_all_draft_file(templates):
+    old_template_keys, new_template_keys = generate_template_keys(templates)
 
     for cache_file in CACHE_ROOT.iterdir():
         if cache_file.name.startswith('.'):
             continue
         if cache_file.name in BUGIT_SYSTEM_FILENAME:
             continue
+        if cache_file.name.endswith(DRAFT_INFO_FILE_SUFFIX):
+            continue
 
-        file_name = f'{cache_file.name}_{cache_key}'
+        cache_name_parts = cache_file.name.split('_')
+        if len(cache_name_parts) < 2:
+            continue
+        if cache_name_parts[0] not in old_template_keys:
+            continue
+        
+        template_idx = old_template_keys[cache_name_parts[0]]
+        file_name = f'{new_template_keys[template_idx]}_{cache_name_parts[1]}'
         detail_path = CACHE_ROOT / file_name
-        info_path = CACHE_ROOT / f'{file_name}.info'
+        info_path = CACHE_ROOT / f'{cache_file}.info'
+        new_info_path = CACHE_ROOT / f'{file_name}.info'
+        if detail_path.exists():
+            try:
+                with codecs.open(str(info_path), 'r') as f:
+                    cache_name = json.load(f)['cache_name']
+            except Exception:
+                logger.error(f'Update cache error! {str(cache_file)}')
+            cache_name = cache_name + '_copy'
+            try:
+                with open(info_path, 'w') as f:
+                    f.write(json.dumps({'cache_name': cache_name}, ensure_ascii=False))
+            except Exception:
+                logger.error(f'Update cache error! {str(cache_file)}')
+            cache_key = str(md5(cache_name.encode()).hexdigest())
+            file_name = f'{new_template_keys[template_idx]}_{cache_key}'
+            detail_path = CACHE_ROOT / file_name
+            new_info_path = CACHE_ROOT / f'{file_name}.info'
         cache_file.rename(detail_path)
-        try:
-            with open(info_path, 'w') as f:
-                f.write(json.dumps({'cache_name': DEFAULT_DRAFT_NAME}, ensure_ascii=False))
-        except Exception:
-            logger.error(f'Update cache error! {str(cache_file)}')
+        info_path.rename(new_info_path)
 
 
 def _check_dir():

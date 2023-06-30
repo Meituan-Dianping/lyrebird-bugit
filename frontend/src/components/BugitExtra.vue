@@ -34,7 +34,7 @@ export default {
       get () {
         return this.$store.state.event.eventDetail
       },
-      set(val) {
+      set (val) {
 
       }
     }
@@ -77,7 +77,7 @@ export default {
 
 <style scoped>
 .split-right-table {
-  height: calc(100vh - 28px);
+  height: calc(100vh - 32px);
   /* total:100vh
     form
     padding: 10px

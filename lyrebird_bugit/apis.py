@@ -23,14 +23,15 @@ def template():
         '''
         Get all template list, all draft list, last selected template and last selected draft
         '''
-        draft_version = cache.check_draft_version()
-        if draft_version < cache.DRAFT_VERSION_V_1_8_0:
-            logger.info('Updating draft into v1.8.0 from v1.7.0')
-            cache.update_selected_template()
-            cache.update_all_draft_file()
-
         templates = template_loader.template_list()
-        last_selected_template = cache.get_selected_template()
+
+        draft_version = cache.check_draft_version()
+        if draft_version < cache.DRAFT_VERSION_V_1_12_4:
+            logger.info('Updating draft into v1.12.4')
+            cache.update_selected_template()
+            cache.update_all_draft_file(templates)
+
+        last_selected_template = str(Path(cache.get_selected_template()).expanduser())
         selected_template_index = None
         for index, template in enumerate(templates):
             if template['path'] == last_selected_template:

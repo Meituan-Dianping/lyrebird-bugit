@@ -33,10 +33,12 @@ def template_list():
             logger.debug(f'Load template {template_file}')
             template = imp.load_source(template_file.stem, str(template_file))
             template_check(template)
+            relative_template_file_path = str(template_file).replace(str(Path.home()), '~')
+            template_key = md5(relative_template_file_path.encode()).hexdigest()
             template_list.append({
                 'name': template.name,
                 'path': str(template_file),
-                'id': md5(str(template_file).encode()).hexdigest()
+                'id': template_key
             })
             del template
         except Exception:
