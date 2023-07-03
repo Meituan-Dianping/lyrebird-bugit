@@ -80,9 +80,7 @@ export default {
   height: calc(100vh - 32px);
   /* total:100vh
     form
-    padding: 10px
     button: 32px
-    padding: 10px
     */
   overflow-y: auto;
   border-bottom: 1px solid #dcdee2;

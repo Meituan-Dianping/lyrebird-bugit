@@ -31,13 +31,13 @@ def template():
             cache.update_selected_template()
             cache.update_all_draft_file(templates)
 
-        last_selected_template = str(Path(cache.get_selected_template()).expanduser())
+        last_selected_template = cache.get_selected_template()
         selected_template_index = None
         for index, template in enumerate(templates):
             if template['path'] == last_selected_template:
                 selected_template_index = index
                 break
-        if not selected_template_index:
+        if selected_template_index is None:
             return application.make_ok_response(templates=templates)
 
         template_key = cache.get_filename(last_selected_template)

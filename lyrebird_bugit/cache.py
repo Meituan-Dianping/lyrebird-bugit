@@ -32,7 +32,7 @@ def delete(template_key):
 
 
 def get_filename(abs_template_path, draft_name=''):
-    relative_template_path = abs_template_path.replace(str(Path.home()), '~')
+    relative_template_path = _change_home(abs_template_path, str(Path.home()), '~')
     template_key = md5(relative_template_path.encode()).hexdigest()
     if not draft_name:
         return f'{template_key}'
@@ -42,7 +42,7 @@ def get_filename(abs_template_path, draft_name=''):
 
 
 def selected_template(abs_template_path, cache_name):
-    relative_template_path = abs_template_path.replace(str(Path.home()), '~')
+    relative_template_path = _change_home(abs_template_path, str(Path.home()), '~')
     _save_cache_to_file(LAST_SELECT_TEMPLATE_FILENAME, 
                         {'path': relative_template_path, 'cache_name': cache_name, 'draft_version': '1.12.4'})
 
@@ -51,7 +51,8 @@ def get_selected_template():
     _cache = _read_cache_from_file(LAST_SELECT_TEMPLATE_FILENAME)
     if not _cache:
         return None
-    return _cache.get('path')
+    selected_template_path = _cache.get('path')
+    return str(Path(selected_template_path).expanduser())
 
 
 def get_selected_cache():
@@ -91,8 +92,8 @@ def check_draft_version():
 
 def update_selected_template():
     _cache = _read_cache_from_file(LAST_SELECT_TEMPLATE_FILENAME)
-    template_path = _cache['path'].replace(str(Path.home()), '~')
-    template_path = _cache['path'].replace('/root', '~')
+    template_path = _change_home(_cache['path'], str(Path.home()), '~')  # for macOS and winOS
+    template_path = _change_home(_cache['path'], '/root', '~')  # for Linux OS
     _cache['path'] = template_path
     if 'cache_name' not in _cache:
         _cache['cache_name'] = DEFAULT_DRAFT_NAME
@@ -106,22 +107,19 @@ def generate_template_keys(templates):
     else:
         other_home_path = '/root'
     
-    old_template_keys = {}
-    new_template_keys = []
-    for index, template in enumerate(templates):
+    template_keys_map = {}
+    for template in templates:
+        new_template_key = template['id']
         template_key = str(md5(template['path'].encode()).hexdigest())
-        old_template_keys[template_key] = index
-        other_absolute_path = template['path'].replace(str(Path.home()), other_home_path)
+        template_keys_map[template_key] = new_template_key
+        other_absolute_path = _change_home(template['path'], str(Path.home()), other_home_path)
         other_template_key = str(md5(other_absolute_path.encode()).hexdigest())
-        old_template_keys[other_template_key] = index
-        relative_path = template['path'].replace(str(Path.home()), '~')
-        new_template_key = str(md5(relative_path.encode()).hexdigest())
-        new_template_keys.append(new_template_key)
-    return old_template_keys, new_template_keys
+        template_keys_map[other_template_key] = new_template_key
+    return template_keys_map
 
 
 def update_all_draft_file(templates):
-    old_template_keys, new_template_keys = generate_template_keys(templates)
+    template_keys_map = generate_template_keys(templates)
 
     for cache_file in CACHE_ROOT.iterdir():
         if cache_file.name.startswith('.'):
@@ -134,11 +132,13 @@ def update_all_draft_file(templates):
         cache_name_parts = cache_file.name.split('_')
         if len(cache_name_parts) < 2:
             continue
-        if cache_name_parts[0] not in old_template_keys:
+        old_template_key = cache_name_parts[0]
+        cache_key = cache_name_parts[1]
+        if old_template_key not in template_keys_map:
             continue
         
-        template_idx = old_template_keys[cache_name_parts[0]]
-        file_name = f'{new_template_keys[template_idx]}_{cache_name_parts[1]}'
+        new_template_key = template_keys_map[old_template_key]
+        file_name = f'{new_template_key}_{cache_key}'
         detail_path = CACHE_ROOT / file_name
         info_path = CACHE_ROOT / f'{cache_file}.info'
         new_info_path = CACHE_ROOT / f'{file_name}.info'
@@ -147,15 +147,19 @@ def update_all_draft_file(templates):
                 with codecs.open(str(info_path), 'r') as f:
                     cache_name = json.load(f)['cache_name']
             except Exception:
-                logger.error(f'Update cache error! {str(cache_file)}')
-            cache_name = cache_name + '_copy'
+                logger.error(f'Update cache from v1.8.0 to v1.12.4 error! \
+                             Cannot read the info file: {str(cache_file)}')
+                continue
+            cache_name = f'{cache_name}_copy'
             try:
                 with open(info_path, 'w') as f:
                     f.write(json.dumps({'cache_name': cache_name}, ensure_ascii=False))
             except Exception:
-                logger.error(f'Update cache error! {str(cache_file)}')
+                logger.error(f'Update cache from v1.8.0 to v1.12.4 error! \
+                             Cannot write the info file: {str(cache_file)}')
+                continue
             cache_key = str(md5(cache_name.encode()).hexdigest())
-            file_name = f'{new_template_keys[template_idx]}_{cache_key}'
+            file_name = f'{new_template_key}_{cache_key}'
             detail_path = CACHE_ROOT / file_name
             new_info_path = CACHE_ROOT / f'{file_name}.info'
         cache_file.rename(detail_path)
@@ -188,3 +192,12 @@ def _delete_cache_from_file(name):
     target_file = CACHE_ROOT / name
     if target_file.exists() and target_file.is_file():
         target_file.unlink()
+
+
+def _change_home(original_path, old_home, new_home):
+    """
+    Change the home part of the original path:
+    from an old OS to a new OS, or from absolute to relative (when new_home = '~')
+    """
+    _path = original_path.replace(old_home, new_home)
+    return _path
