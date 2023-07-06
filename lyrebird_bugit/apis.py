@@ -65,7 +65,7 @@ def template():
         template_detail = cache.get(draft_filename)
 
         template = template_loader.get_template(template_path)
-        if inspect.getargspec(template.form).args:
+        if inspect.signature(template.form).parameters:
             template_detail = template.form({'cache': template_detail})
         else:
             template_detail = template.form()
