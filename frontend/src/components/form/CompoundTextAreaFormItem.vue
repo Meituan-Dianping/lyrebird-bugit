@@ -4,12 +4,7 @@
       <FormItemLabel :label="data.name"/>
     </template>
     <div style="background:#eee;padding:10px">
-      <Input
-        type="textarea"
-        v-model="data.value"
-        :autosize="{minRows: 2, maxRows: 20}"
-        placeholder="Enter your description..."
-      />
+      <RichTextEditor :data="data"></RichTextEditor>
       <div style="padding-top:10px;" v-for="(description, index) in data.extraMsg" :key="index">
         <MovableDescription :data="description" :index="index"/>
       </div>
@@ -20,12 +15,14 @@
 <script>
 import MovableDescription from '@/components/form/MovableDescription.vue'
 import FormItemLabel from '@/components/form/FormItemLabel.vue'
+import RichTextEditor from '@/components/form/RichTextEditor.vue'
 
 export default {
   props: ['data', 'index'],
   components: {
     MovableDescription,
-    FormItemLabel
+    FormItemLabel,
+    RichTextEditor
   },
   created () {
     this.$bus.$on('addMessage', this.addDesc)

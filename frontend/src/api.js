@@ -57,7 +57,7 @@ export const saveImage = (id, imageData) => {
   })
 }
 
-export const createIssue = (templateInfo, issue, attachments, exportAttachments) => {
+export const createIssue = (templateInfo, issue, attachments, exportAttachments, descImgId) => {
   return axios({
     url: API_PREFIX + '/issue',
     method: 'POST',
@@ -65,7 +65,8 @@ export const createIssue = (templateInfo, issue, attachments, exportAttachments)
       template: templateInfo,
       issue,
       attachments,
-      exportAttachments
+      exportAttachments,
+      descImgId
     }
   })
 }

@@ -8,6 +8,9 @@ export default {
     selectedTemplateIndex: null,
     selectedCache: null,
     templateDetail: null,
+    descIndex: null,
+    descValue: null,
+    descImgId: [],
     formInfo: null,
     ruleValidate: null,
     formValue: {},
@@ -45,6 +48,18 @@ export default {
     },
     setTemplateDetail (state, templateDetail) {
       state.templateDetail = templateDetail
+    },
+    setDescIndex (state, descIndex) {
+      state.descIndex = descIndex
+    },
+    setDescValue (state, descValue) {
+      state.descValue = descValue
+    },
+    setDescImgId (state, descImgId) {
+      state.descImgId.push(descImgId)
+    },
+    deleteDescImgId (state, index) {
+      state.descImgId.splice(index, 1)
     },
     setSubmitLock (state, isLock) {
       state.submitLock = isLock
@@ -172,7 +187,14 @@ export default {
       commit('setTemplateDetail', [])
       commit('setLoadTemplate', true)
       api.getTemplate(path, state.selectedCache).then(response => {
-        commit('setTemplateDetail', response.data)
+        const templateDetail = response.data
+        for (let i = 0; i < templateDetail.length; i++) {
+          if (templateDetail[i].component === 'compoundTextarea') {
+            commit('setDescIndex', i)
+            break
+          }
+        }
+        commit('setTemplateDetail', templateDetail)
         commit('setLoadTemplate', false)
       }).catch(error => {
         bus.$emit('message', 'Load template detail error: ' + error)
@@ -184,6 +206,50 @@ export default {
       commit('setSelectedCache', null)
       dispatch('loadCacheList')
       dispatch('loadTemplate')
+    },
+    updateImgToDesc ({ state, commit, dispatch }, img) {
+      const quill = state.descValue
+      let imgBaseName = img.name.split('.').slice(0, -1).join('.')
+      api.getAttachments().then(response => {
+        let attachmentsList = response.data
+        for (let i = attachmentsList.length - 1; i >= 0; i--) {
+          let attachmentName = attachmentsList[i].name
+          // original attachment file name (without adding the timestamp):
+          let fileName = attachmentName.split('_').slice(0, -1).join('_')
+          if (fileName === imgBaseName) {
+            let imgId = attachmentsList[i].id
+            commit('setDescImgId', imgId)
+            let apiPath = `/plugins/bugit/api/attachments/${imgId}`
+            let length = quill.getSelection().index
+            quill.insertEmbed(length, 'image', apiPath)
+            quill.setSelection(length + 1)
+            commit('setDescValue', quill)
+            // Rename this attachment file.
+            // current attachment base name (with the timestamp):
+            let baseName = attachmentName.split('.').slice(0, -1).join('.')
+            let newBaseName = `auto_uploaded_for_description_${baseName}`
+            let extensionName = String(attachmentName.split('.').slice(-1))
+            commit('updateAttachmentsList', response.data)
+            dispatch('renameAttachment', {
+              index: i,
+              baseName: newBaseName,
+              extensionName: extensionName
+            })
+            break
+          }
+        }
+      })
+    },
+    deleteImgFromDesc ({ state, commit }, attachment) {
+      const descImgIdIndex = state.descImgId.indexOf(attachment.id)
+      if (descImgIdIndex !== -1) {
+        const templateDetail = state.templateDetail
+        const descIndex = state.descIndex
+        let imgObject = `<img src="/plugins/bugit/api/attachments/${attachment.id}">`
+        templateDetail[descIndex].value = templateDetail[descIndex].value.replace(imgObject, '<br>')
+        commit('setTemplateDetail', templateDetail)
+        commit('deleteDescImgId', descImgIdIndex)
+      }
     },
     setExtraMsgUpward ({ state, commit }, indexes) {
       let descFormEventbus = state.templateDetail[indexes.propsIndex].extraMsg
@@ -206,7 +272,7 @@ export default {
       bus.$emit('message', 'Submitting issue ...')
       commit('setSubmitLock', true)
       api.createIssue(state.templates[state.selectedTemplateIndex], state.templateDetail,
-        state.attachmentsList, state.exportAttachmentList)
+        state.attachmentsList, state.exportAttachmentList, state.descImgId)
         .then(response => {
           if (response.data.code === 1000) {
             for (let failAttach of response.data.export_fail_attachments) {
@@ -232,9 +298,10 @@ export default {
         state.loadAttachmentCount += 1
       })
     },
-    removeAttachment ({ commit }, attachment) {
+    removeAttachment ({ commit, dispatch }, attachment) {
       commit('deleteAttachment', attachment.index)
       api.removeAttachment(attachment.id)
+      dispatch('deleteImgFromDesc', attachment)
     },
     isNameValid ({ state }, name) {
       if (!name || name.trim().length === 0) {
@@ -285,7 +352,6 @@ export default {
               api.getAttachments().then(response => {
                 commit('updateAttachmentsList', response.data)
               })
-              bus.$emit('msg.success', `Rename attachment to [${newName}] success!`)
             })
             .catch(response => {
               bus.$emit('msg.error', response.data)
