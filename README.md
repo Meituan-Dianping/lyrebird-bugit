@@ -2,6 +2,7 @@
 
 [![Unit Test](https://github.com/Meituan-Dianping/lyrebird-bugit/actions/workflows/unittest.yml/badge.svg)](https://github.com/Meituan-Dianping/lyrebird-bugit/actions/workflows/unittest.yml)
 [![Publish to pypi](https://github.com/Meituan-Dianping/lyrebird-bugit/actions/workflows/publish.yml/badge.svg)](https://github.com/Meituan-Dianping/lyrebird-bugit/actions/workflows/publish.yml)
+[![CodeQL](https://github.com/Meituan-Dianping/lyrebird-bugit/actions/workflows/codeql.yml/badge.svg)](https://github.com/Meituan-Dianping/lyrebird-bugit/actions/workflows/codeql.yml)
 
 [![PyPI](https://img.shields.io/pypi/v/lyrebird-bugit.svg)](https://pypi.python.org/pypi/lyrebird-bugit)
 ![PyPI](https://img.shields.io/pypi/pyversions/lyrebird-bugit.svg)
