@@ -57,6 +57,9 @@ export default {
       placeholder: 'Enter your description...'
     }
   },
+  created () {
+    this.data.value = this.data.value.replace(/\n/g, '<br>')
+  },
   mounted () {
     this.quill = this.$refs.myQuillEditor.quill
     this.initEvent()
