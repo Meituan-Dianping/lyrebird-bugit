@@ -26,32 +26,30 @@
 export default {
   props: ['data'],
   data () {
-    const toolbarContainerOptions = [
-      ['clean'],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'header': 1 }, { 'header': 2 }],
-      [{ 'script': 'sub' }, { 'script': 'super' }],
-      [{ 'direction': 'rtl' }],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      [{ 'indent': '-1' }, { 'indent': '+1' }],
-      ['image']
-    ]
-    var toolbarOptions = {
-      container: toolbarContainerOptions,
-      handlers: {
-        'image': function (value) {
-          if (value) {
-            document.querySelector('#self-defined-upload').click()
-          } else {
-            this.quill.format('image', false)
-          }
-        }
-      }
-    }
     return {
       editorOption: {
         modules: {
-          toolbar: toolbarOptions
+          toolbar: {
+            container: [
+              ['clean'],
+              ['bold', 'italic', 'underline', 'strike'],
+              [{ 'header': 1 }, { 'header': 2 }],
+              [{ 'script': 'sub' }, { 'script': 'super' }],
+              [{ 'direction': 'rtl' }],
+              [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+              [{ 'indent': '-1' }, { 'indent': '+1' }],
+              ['image']
+            ],
+            handlers: {
+              'image': function (value) {
+                if (value) {
+                  document.querySelector('#self-defined-upload').click()
+                } else {
+                  this.quill.format('image', false)
+                }
+              }
+            }
+          }
         }
       },
       placeholder: 'Enter your description...'
