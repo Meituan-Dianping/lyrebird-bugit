@@ -1,13 +1,12 @@
 <h1 align="center">Lyrebird - BugIt plugin</h1>
 
-[![Build Status](https://travis-ci.org/Meituan-Dianping/lyrebird-bugit.svg?branch=master)](https://travis-ci.org/Meituan-Dianping/lyrebird-bugit)
+[![Unit Test](https://github.com/Meituan-Dianping/lyrebird-bugit/actions/workflows/unittest.yml/badge.svg)](https://github.com/Meituan-Dianping/lyrebird-bugit/actions/workflows/unittest.yml)
+[![Publish to pypi](https://github.com/Meituan-Dianping/lyrebird-bugit/actions/workflows/publish.yml/badge.svg)](https://github.com/Meituan-Dianping/lyrebird-bugit/actions/workflows/publish.yml)
+[![CodeQL](https://github.com/Meituan-Dianping/lyrebird-bugit/actions/workflows/codeql.yml/badge.svg)](https://github.com/Meituan-Dianping/lyrebird-bugit/actions/workflows/codeql.yml)
+
 [![PyPI](https://img.shields.io/pypi/v/lyrebird-bugit.svg)](https://pypi.python.org/pypi/lyrebird-bugit)
 ![PyPI](https://img.shields.io/pypi/pyversions/lyrebird-bugit.svg)
 ![GitHub](https://img.shields.io/github/license/meituan-dianping/lyrebird-bugit.svg)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/89854dfac65d4cde9efaebcc6b3845c6)](https://www.codacy.com/manual/dodosophia/lyrebird-bugit?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Meituan-Dianping/lyrebird-bugit&amp;utm_campaign=Badge_Grade)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/Meituan-Dianping/lyrebird-bugit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Meituan-Dianping/lyrebird-bugit/alerts/)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/Meituan-Dianping/lyrebird-bugit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Meituan-Dianping/lyrebird-bugit/context:python)
-
 
 **[Lyrebird](https://github.com/Meituan-Dianping/lyrebird)**
 是一个基于拦截以及模拟HTTP/HTTPS网络请求的面向移动应用的插件化测试平台。

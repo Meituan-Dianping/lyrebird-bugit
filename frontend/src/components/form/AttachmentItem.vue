@@ -60,14 +60,30 @@
              @click="rename"
              />
           </Tooltip>
-          <Tooltip content="Delete" placement="top">
-            <Button
-             size="small"
-             type="text"
-             icon="md-trash"
-             @click="deleteAttach"
-             />
-          </Tooltip>
+          <template v-if="deleteMode">
+            <Tooltip content="Delete" placement="top">
+              <Button
+              size="small"
+              type="text"
+              icon="md-trash"
+              @click="deleteAttach"
+              />
+            </Tooltip>
+          </template>
+          <template v-else>
+            <Tooltip placement="left">
+              <Button
+              size="small"
+              type="text"
+              icon="md-trash"
+              disabled
+              />
+              <div slot="content">
+                <p>Please delete this file from</p>
+                <p>the description box above.</p>
+              </div>
+            </Tooltip>
+          </template>
         </span>
       </template>
   </span>
@@ -92,6 +108,11 @@ export default {
           index: this.index,
           mode: val
         })
+      }
+    },
+    deleteMode: {
+      get () {
+        return this.$store.state.form.attachmentsList[this.index].deleteMode
       }
     }
   },

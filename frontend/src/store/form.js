@@ -8,6 +8,8 @@ export default {
     selectedTemplateIndex: null,
     selectedCache: null,
     templateDetail: null,
+    descValue: null,
+    descImgId: new Set(),
     formInfo: null,
     ruleValidate: null,
     formValue: {},
@@ -45,6 +47,15 @@ export default {
     },
     setTemplateDetail (state, templateDetail) {
       state.templateDetail = templateDetail
+    },
+    setDescValue (state, descValue) {
+      state.descValue = descValue
+    },
+    addDescImgId (state, descImgId) {
+      state.descImgId.add(descImgId)
+    },
+    deleteDescImgId (state, descImgId) {
+      state.descImgId.delete(descImgId)
     },
     setSubmitLock (state, isLock) {
       state.submitLock = isLock
@@ -100,6 +111,11 @@ export default {
           attachmentsList[i].editMode = true
         } else {
           attachmentsList[i].editMode = false
+        }
+        if (state.descImgId.has(id)) {
+          attachmentsList[i].deleteMode = false
+        } else {
+          attachmentsList[i].deleteMode = true
         }
       }
       state.attachmentsList = attachmentsList
@@ -185,6 +201,40 @@ export default {
       dispatch('loadCacheList')
       dispatch('loadTemplate')
     },
+    updateImgToDesc ({ state, commit, dispatch }, img) {
+      const quill = state.descValue
+      let imgBaseName = img.name.split('.').slice(0, -1).join('.')
+      api.getAttachments().then(response => {
+        let attachmentsList = response.data
+        for (let i = attachmentsList.length - 1; i >= 0; i--) {
+          let attachmentName = attachmentsList[i].name
+          // original attachment file name (without adding the timestamp):
+          let fileName = attachmentName.split('_').slice(0, -1).join('_')
+          if (fileName !== imgBaseName) {
+            continue
+          }
+          let imgId = attachmentsList[i].id
+          commit('addDescImgId', imgId)
+          let apiPath = `/plugins/bugit/api/attachments/${imgId}`
+          let length = quill.getSelection().index
+          quill.insertEmbed(length, 'image', apiPath)
+          quill.setSelection(length + 1)
+          commit('setDescValue', quill)
+          // Rename this attachment file.
+          // current attachment base name (with the timestamp):
+          let baseName = attachmentName.split('.').slice(0, -1).join('.')
+          let newBaseName = `auto_uploaded_for_description_${baseName}`
+          let extensionName = String(attachmentName.split('.').slice(-1))
+          commit('updateAttachmentsList', response.data)
+          dispatch('renameAttachment', {
+            index: i,
+            baseName: newBaseName,
+            extensionName: extensionName
+          })
+          break
+        }
+      })
+    },
     setExtraMsgUpward ({ state, commit }, indexes) {
       let descFormEventbus = state.templateDetail[indexes.propsIndex].extraMsg
       let index = indexes.index
@@ -205,8 +255,9 @@ export default {
     submit ({ state, commit }) {
       bus.$emit('message', 'Submitting issue ...')
       commit('setSubmitLock', true)
+      const descImgIdArray = Array.from(state.descImgId)
       api.createIssue(state.templates[state.selectedTemplateIndex], state.templateDetail,
-        state.attachmentsList, state.exportAttachmentList)
+        state.attachmentsList, state.exportAttachmentList, descImgIdArray)
         .then(response => {
           if (response.data.code === 1000) {
             for (let failAttach of response.data.export_fail_attachments) {
@@ -235,6 +286,18 @@ export default {
     removeAttachment ({ commit }, attachment) {
       commit('deleteAttachment', attachment.index)
       api.removeAttachment(attachment.id)
+    },
+    removeAttachmentById ({ commit, dispatch }, id) {
+      api.getAttachments().then(response => {
+        let attachmentsList = response.data
+        for (let i = 0; i < attachmentsList.length; i++) {
+          if (attachmentsList[i].id === id) {
+            dispatch('removeAttachment', { id: attachmentsList[i].id, index: i })
+            commit('deleteDescImgId', attachmentsList[i].id)
+            break
+          }
+        }
+      })
     },
     isNameValid ({ state }, name) {
       if (!name || name.trim().length === 0) {
@@ -285,7 +348,6 @@ export default {
               api.getAttachments().then(response => {
                 commit('updateAttachmentsList', response.data)
               })
-              bus.$emit('msg.success', `Rename attachment to [${newName}] success!`)
             })
             .catch(response => {
               bus.$emit('msg.error', response.data)

@@ -82,6 +82,7 @@ def issue():
     issue_data = issue_req['issue']
     attachments = issue_req['attachments']
     export_attachments = issue_req['exportAttachments']
+    desc_img_id = issue_req['descImgId']
 
     all_bugit_message = ''
 
@@ -101,7 +102,7 @@ def issue():
                 export_fail_attachments.append(file_item['name'])
 
     # Set bugit script context
-    context = {'issue': issue_data, 'attachments': attachments}
+    context = {'issue': issue_data, 'attachments': attachments, 'desc_img_id': desc_img_id}
     # Set submit actions
     submit_action_functions = template.submit()
     # Do submit
