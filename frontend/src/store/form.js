@@ -219,6 +219,7 @@ export default {
           let imgId = attachmentsList[i].id
           commit('addDescImgId', imgId)
           let apiPath = `/plugins/bugit/api/attachments/${imgId}`
+          quill.focus()
           let length = quill.getSelection().index
           quill.insertEmbed(length, 'image', apiPath)
           quill.setSelection(length + 1)
