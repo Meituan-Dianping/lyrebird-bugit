@@ -66,18 +66,15 @@ export default {
   },
   methods: {
     loadingFile () {
-      this.loadingMsg = this.$Message.loading({
-        content: 'Loading image...',
-        duration: 0
-      })
+      this.$bus.$emit('msg.loading', 'Loading image...')
     },
     handleSuccess (response, file, fileList) {
       this.$store.dispatch('updateImgToDesc', file)
-      setTimeout(this.loadingMsg, 10)
+      this.$bus.$emit('msg.destroy')
     },
     handleError (error, file) {
+      this.$bus.$emit('msg.destroy')
       this.$bus.$emit('msg.error', 'Import ' + file.name + ' error: ' + error)
-      setTimeout(this.loadingMsg, 10)
     },
     initEvent () {
       this.quill.on('text-change', this.deleteImg)

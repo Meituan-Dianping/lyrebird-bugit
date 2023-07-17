@@ -70,10 +70,11 @@ def template():
         else:
             template_detail = template.form()
         
-        message = None
-        if 'interface_available' in template_detail[-1]:
-            message = 'Template load failed! Please try again later.'
-            template_detail.pop()
+        # 'template_loaded' fields will be ensured to have a uniform value by the script.
+        if template_detail[0]['template_loaded']:
+            message = None
+        else:
+            message = 'Template loads failed! Please try again later.'
 
         cache.selected_template(template_path, draft_name)
         return application.make_ok_response(
@@ -122,7 +123,7 @@ def issue():
         except Exception as e:
             if e.__class__.__name__ == 'BugitFormInputError':
                 return application.make_fail_response(str(e))
-            if e.__class__.__name__ == 'ReloadBugitForm':
+            if e.__class__.__name__ == 'SubmitError':
                 return application.make_fail_response(str(e.args[0]['message']),
                                                       template_detail=e.args[0]['template_detail'])
             error_message = traceback.format_exc()
