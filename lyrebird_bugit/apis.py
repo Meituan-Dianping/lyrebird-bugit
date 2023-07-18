@@ -69,9 +69,18 @@ def template():
             template_detail = template.form({'cache': template_detail})
         else:
             template_detail = template.form()
+        
+        # 'template_loaded' fields will be ensured to have a uniform value by the script.
+        if template_detail[0]['template_loaded']:
+            message = None
+        else:
+            message = 'Template loads failed! Please try again later.'
 
         cache.selected_template(template_path, draft_name)
-        return jsonify(template_detail)
+        return application.make_ok_response(
+            message=message,
+            template_detail=template_detail
+        )
 
 
 def issue():
@@ -114,6 +123,9 @@ def issue():
         except Exception as e:
             if e.__class__.__name__ == 'BugitFormInputError':
                 return application.make_fail_response(str(e))
+            if e.__class__.__name__ == 'SubmitError':
+                return application.make_fail_response(str(e.args[0]['message']),
+                                                      template_detail=e.args[0]['template_detail'])
             error_message = traceback.format_exc()
             trace = "<br/>".join(error_message.split("\n"))
             lyrebird.report({

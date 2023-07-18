@@ -188,8 +188,11 @@ export default {
       commit('setTemplateDetail', [])
       commit('setLoadTemplate', true)
       api.getTemplate(path, state.selectedCache).then(response => {
-        commit('setTemplateDetail', response.data)
+        commit('setTemplateDetail', response.data.template_detail)
         commit('setLoadTemplate', false)
+        if (response.data.message) {
+          bus.$emit('msg.info', response.data.message)
+        }
       }).catch(error => {
         bus.$emit('message', 'Load template detail error: ' + error)
         commit('setLoadTemplate', false)
@@ -216,6 +219,7 @@ export default {
           let imgId = attachmentsList[i].id
           commit('addDescImgId', imgId)
           let apiPath = `/plugins/bugit/api/attachments/${imgId}`
+          quill.focus()
           let length = quill.getSelection().index
           quill.insertEmbed(length, 'image', apiPath)
           quill.setSelection(length + 1)
@@ -264,6 +268,8 @@ export default {
               let extensionName = String(failAttach.split('.').slice(-1))
               bus.$emit('msg.error', `Add ${failAttach} to attachment error: cannot convert data to a ${extensionName} file.`)
             }
+          } else if (response.data.template_detail) {
+            commit('setTemplateDetail', response.data.template_detail)
           }
           bus.$emit('message', response.data)
           commit('setSubmitLock', false)

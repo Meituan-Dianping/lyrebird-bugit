@@ -37,6 +37,8 @@ export default {
     this.$bus.$on('msg.success', this.successMessage)
     this.$bus.$on('msg.info', this.infoMessage)
     this.$bus.$on('msg.error', this.errorMessage)
+    this.$bus.$on('msg.loading', this.loadingMessage)
+    this.$bus.$on('msg.destroy', this.destroyMessage)
   },
   mounted () {
     document.addEventListener('keydown', this.onKeyDown)
@@ -81,6 +83,13 @@ export default {
         closable: true
       })
     },
+    loadingMessage (msg) {
+      this.$Message.loading({
+        content: msg,
+        duration: 0,
+        closable: true
+      })
+    },
     displayMessage (data) {
       if (data.hasOwnProperty('code')) {
         if (data.code === 1000) {
@@ -109,6 +118,9 @@ export default {
           closable: true
         })
       }
+    },
+    destroyMessage () {
+      this.$Message.destroy()
     }
   }
 }

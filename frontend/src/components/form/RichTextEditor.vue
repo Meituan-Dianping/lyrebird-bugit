@@ -6,6 +6,7 @@
       :format="['jpg','jpeg','png']"
       accept=".jpg,.jpeg,.png"
       :show-upload-list="false"
+      :before-upload="loadingFile"
       :on-success="handleSuccess"
       :on-error="handleError"
       style="display: none;"
@@ -50,9 +51,9 @@ export default {
               }
             }
           }
-        }
-      },
-      placeholder: 'Enter your description...'
+        },
+        placeholder: 'Enter your description...'
+      }
     }
   },
   created () {
@@ -64,10 +65,15 @@ export default {
     this.$store.commit('setDescValue', this.quill)
   },
   methods: {
+    loadingFile () {
+      this.$bus.$emit('msg.loading', 'Loading image...')
+    },
     handleSuccess (response, file, fileList) {
       this.$store.dispatch('updateImgToDesc', file)
+      this.$bus.$emit('msg.destroy')
     },
     handleError (error, file) {
+      this.$bus.$emit('msg.destroy')
       this.$bus.$emit('msg.error', 'Import ' + file.name + ' error: ' + error)
     },
     initEvent () {
