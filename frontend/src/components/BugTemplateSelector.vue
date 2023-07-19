@@ -98,6 +98,7 @@ export default {
       set (val) {
         if (val !== undefined) {
           this.$store.commit('setSelectedCache', val)
+          this.$store.commit('setCreateName', val)
           this.$store.dispatch('loadTemplate')
         }
       }

@@ -71,7 +71,7 @@ def template():
             template_detail = template.form()
         
         # 'template_loaded' fields will be ensured to have a uniform value by the script.
-        if template_detail[0]['template_loaded']:
+        if template_detail[0].get('template_loaded'):
             message = None
         else:
             message = 'Template loads failed! Please try again later.'

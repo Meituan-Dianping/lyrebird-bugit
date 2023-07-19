@@ -44,6 +44,14 @@ export default {
     document.addEventListener('keydown', this.onKeyDown)
     document.addEventListener('keyup', this.onKeyUp)
   },
+  beforeDestroy () {
+    this.$bus.$off('message', this.displayMessage)
+    this.$bus.$off('msg.success', this.successMessage)
+    this.$bus.$off('msg.info', this.infoMessage)
+    this.$bus.$off('msg.error', this.errorMessage)
+    this.$bus.$off('msg.loading', this.loadingMessage)
+    this.$bus.$off('msg.destroy', this.destroyMessage)
+  },
   methods: {
     onKeyDown (event) {
       if (event.key === 'Meta') {
@@ -51,7 +59,11 @@ export default {
       } else if (event.key === 's') {
         if (this.metaKey) {
           window.event.preventDefault()
-          this.$store.dispatch('saveCache')
+          if (this.$store.state.form.selectedCache === '') {
+            this.$store.commit('setShownDraftNameModal', true)
+          } else {
+            this.$store.dispatch('saveCache')
+          }
         }
       } else if (event.key === 'Enter' && this.$store.state.form.shownDraftNameModal) {
         this.$store.dispatch('saveCache')
