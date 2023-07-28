@@ -36,7 +36,8 @@ export const getEvent = (options) => {
     url += '/page/' + options.page
   }
   if (options.searchStr && options.searchStr.trim()) {
-    url += '/search/' + options.searchStr.trim().split(/\s+/).join('+')
+    var searchStr = options.searchStr.trim().split(/\s+/).join('+')
+    url += '/search?q=' + encodeURIComponent(searchStr)
   }
   return axios({
     url: url
