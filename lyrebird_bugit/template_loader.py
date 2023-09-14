@@ -24,10 +24,22 @@ def get_workspace():
     return metadata_dir
 
 
+def get_default_template():
+    bugit_workspace = application.config.get('bugit.workspace', '')
+    bugit_template = application.config.get('bugit.template', '')
+    template_path = Path(bugit_workspace + bugit_template)
+    if bugit_workspace and bugit_template and template_path.exists():
+        return template_path
+    return
+
+
 def template_list():
     template_list = []
+    default_template = get_default_template()
     for template_file in get_workspace().iterdir():
         if not template_file.name.endswith('.py'):
+            continue
+        if default_template and template_file != default_template:
             continue
         try:
             logger.debug(f'Load template {template_file}')

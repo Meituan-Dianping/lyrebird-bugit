@@ -32,6 +32,10 @@ def template():
             cache.update_all_draft_file(templates)
 
         last_selected_template = cache.get_selected_template()
+        if len(templates) == 1 and last_selected_template != templates[0]['path']:
+            last_selected_template = templates[0]['path']
+            cache.selected_template(last_selected_template, None)
+        
         selected_template_index = None
         for index, template in enumerate(templates):
             if template['path'] == last_selected_template:
