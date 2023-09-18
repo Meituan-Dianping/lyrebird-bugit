@@ -30,7 +30,6 @@ def get_default_template():
     template_path = Path(bugit_workspace + bugit_default_template)
     if bugit_workspace and bugit_default_template and template_path.exists():
         return template_path
-    return
 
 
 def template_list():
