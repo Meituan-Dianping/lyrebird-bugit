@@ -26,9 +26,9 @@ def get_workspace():
 
 def get_default_template():
     bugit_workspace = application.config.get('bugit.workspace', '')
-    bugit_template = application.config.get('bugit.template', '')
-    template_path = Path(bugit_workspace + bugit_template)
-    if bugit_workspace and bugit_template and template_path.exists():
+    bugit_default_template = application.config.get('bugit.default_template', '')
+    template_path = Path(bugit_workspace + bugit_default_template)
+    if bugit_workspace and bugit_default_template and template_path.exists():
         return template_path
     return
 
