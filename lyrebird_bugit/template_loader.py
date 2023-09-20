@@ -24,7 +24,7 @@ def get_workspace():
     return metadata_dir
 
 
-def get_default_template():
+def get_default_template_path():
     bugit_workspace = application.config.get('bugit.workspace', '')
     bugit_default_template = application.config.get('bugit.default_template', '')
     template_path = Path(bugit_workspace + bugit_default_template)
@@ -34,11 +34,11 @@ def get_default_template():
 
 def template_list():
     template_list = []
-    default_template = get_default_template()
+    default_template_path = get_default_template_path()
     for template_file in get_workspace().iterdir():
         if not template_file.name.endswith('.py'):
             continue
-        if default_template and template_file != default_template:
+        if default_template_path and template_file != default_template_path:
             continue
         try:
             logger.debug(f'Load template {template_file}')
@@ -71,3 +71,23 @@ def template_check(template):
 def get_template(file_path):
     template = imp.load_source(Path(file_path).stem, str(file_path))
     return template
+
+
+def notice_handler(msg):
+    # Filter out messages with invalid types
+    if not isinstance(msg, dict):
+        return
+    
+    # Filter out messages from unconfigured extensions
+    checker_switch = application.config.get('autoissue.checker.switch', {})
+    sender_file = msg.get('sender', {}).get('file', '')
+    if sender_file not in checker_switch:
+        return
+    
+    default_template_path = get_default_template_path()
+    if default_template_path is None:
+        logger.error(f'Init Auto Issue Server Failed. Template path is configured incorrectly: {default_template_path}')
+        return
+    
+    template = get_template(default_template_path)
+    template.AutoIssue().auto_issue_handler(msg)

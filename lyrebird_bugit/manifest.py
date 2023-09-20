@@ -21,6 +21,7 @@ manifest(
         ('ios.device', event_handler.on_ios_device),
         ('android.screenshot', event_handler.on_android_screenshot),
         ('ios.screenshot', event_handler.on_ios_screenshot),
-        ('upload_files', event_handler.on_upload_files)
+        ('upload_files', event_handler.on_upload_files),
+        ('notice', event_handler.on_notice)
     ]
 )
