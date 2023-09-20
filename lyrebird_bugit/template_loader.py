@@ -79,7 +79,7 @@ def notice_handler(msg):
         return
     
     # Filter out messages from unconfigured extensions
-    checker_switch = application.config.get('autoissue.checker.switch', {})
+    checker_switch = application.config.get('plugin.bugit.autoissue.checker_switch', {})
     sender_file = msg.get('sender', {}).get('file', '')
     if sender_file not in checker_switch:
         return
