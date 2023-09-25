@@ -62,7 +62,7 @@ def on_upload_files(msg):
 
 
 def on_notice(msg):
-    conf_autoissue = application.config.get('plugin.bugit.autoissue', False)
-    if not conf_autoissue:
-        return
-    template_loader.notice_handler(msg)
+    sender_file = msg.get('sender', {}).get('file', '')
+    autoissue_checker = application.config.get('event.notice.autoissue.checker', [])
+    if sender_file in autoissue_checker:
+        template_loader.notice_handler(msg)
