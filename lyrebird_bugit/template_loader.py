@@ -8,7 +8,8 @@ from lyrebird import get_logger
 
 logger = get_logger()
 
-default_template_ready = None
+autoissue_ready = None
+last_template = None
 
 def get_workspace():
     bugit_workspace = application.config.get('bugit.workspace')
@@ -28,8 +29,6 @@ def get_workspace():
 def get_default_template_path():
     bugit_workspace = application.config.get('bugit.workspace', '')
     bugit_default_template = application.config.get('bugit.default_template', '')
-    if default_template_ready is None:
-        default_template_check(bugit_workspace, bugit_default_template)
     template_path = Path(bugit_workspace + bugit_default_template)
     if bugit_default_template:
         return template_path
@@ -37,14 +36,8 @@ def get_default_template_path():
 
 def template_list():
     template_list = []
-    default_template_path = get_default_template_path()
-    if not default_template_ready:
-        return template_list
-
     for template_file in get_workspace().iterdir():
         if not template_file.name.endswith('.py'):
-            continue
-        if default_template_path and template_file != default_template_path:
             continue
         try:
             logger.debug(f'Load template {template_file}')
@@ -74,38 +67,39 @@ def template_check(template):
         template.submit), "BugIt template should have submit function"
 
 
-def default_template_check(workspace, default_template):
-    global default_template_ready
+def default_template_check(template_path):
+    global autoissue_ready
 
-    template_path = Path(workspace + default_template)
     if not template_path.exists():
         logger.error('Default template path is not existed.')
-        default_template_ready = False
+        autoissue_ready = False
         return
     
-    if application.config.get('event.notice.autoissue.checker'):
-        if not default_template:
-            logger.error('Default template is not configured.')
-            default_template_ready = False
-            return
-        template = get_template(template_path)
-        if not (hasattr(template, 'auto_issue_handler') and callable(template.auto_issue_handler)):
-            logger.error('BugIt template should have auto_issue_handler function.')
-            default_template_ready = False
-            return
+    template = get_template(template_path)
+    if not (hasattr(template, 'auto_issue') and callable(template.auto_issue)):
+        logger.error('Default template should have auto_issue function.')
+        autoissue_ready = False
+        return
     
-    default_template_ready = True
+    autoissue_ready = True
 
 
 def get_template(file_path):
-    template = imp.load_source(Path(file_path).stem, str(file_path))
-    return template
+    global last_template
+
+    if not last_template or last_template.__file__ != str(file_path):
+        last_template = imp.load_source(Path(file_path).stem, str(file_path))
+
+    return last_template
 
 
 def notice_handler(msg):
     default_template_path = get_default_template_path()
 
-    if not default_template_ready:
+    if autoissue_ready is None:
+        default_template_check(default_template_path)
+    
+    if autoissue_ready == False:
         return
     
     # Filter out messages with invalid types
@@ -113,4 +107,4 @@ def notice_handler(msg):
         return
     
     template = get_template(default_template_path)
-    template.auto_issue_handler(msg)
+    template.auto_issue(msg)

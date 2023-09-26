@@ -24,6 +24,7 @@ def template():
         Get all template list, all draft list, last selected template and last selected draft
         '''
         templates = template_loader.template_list()
+        default_template = template_loader.get_default_template_path()
 
         draft_version = cache.check_draft_version()
         if draft_version < cache.DRAFT_VERSION_V_1_12_4:
@@ -32,9 +33,8 @@ def template():
             cache.update_all_draft_file(templates)
 
         last_selected_template = cache.get_selected_template()
-        if len(templates) == 1 and last_selected_template != templates[0]['path']:
-            last_selected_template = templates[0]['path']
-            cache.selected_template(last_selected_template, None)
+        if not last_selected_template and default_template:
+            last_selected_template = str(default_template)
         
         selected_template_index = None
         for index, template in enumerate(templates):
