@@ -1,7 +1,9 @@
 import lyrebird
+from . import template_loader
 from uuid import uuid4
 from collections import OrderedDict
 from lyrebird import get_logger
+from lyrebird import application
 
 
 logger = get_logger()
@@ -57,3 +59,10 @@ def on_upload_files(msg):
                                       'name': item['upload_file']['name'],
                                       'path': item['upload_file']['path']}
     lyrebird.emit('attachments')
+
+
+def on_notice(msg):
+    sender_file = msg.get('sender', {}).get('file', '')
+    autoissue_checker = application.config.get('event.notice.autoissue.checker', [])
+    if sender_file in autoissue_checker:
+        template_loader.notice_handler(msg)

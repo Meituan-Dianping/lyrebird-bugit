@@ -8,6 +8,8 @@ from lyrebird import get_logger
 
 logger = get_logger()
 
+autoissue_ready = None
+last_template = None
 
 def get_workspace():
     bugit_workspace = application.config.get('bugit.workspace')
@@ -22,6 +24,18 @@ def get_workspace():
         f'Bugit workspace not exists! Create on {metadata_dir._str}')
 
     return metadata_dir
+
+
+def get_default_template_path():
+    bugit_workspace = application.config.get('bugit.workspace')
+    if not bugit_workspace:
+        return
+    
+    bugit_default_template = application.config.get('bugit.default_template')
+    if not bugit_default_template:
+        return
+
+    return Path(bugit_workspace) / Path(bugit_default_template)
 
 
 def template_list():
@@ -57,6 +71,49 @@ def template_check(template):
         template.submit), "BugIt template should have submit function"
 
 
+def default_template_check(template_path):
+    global autoissue_ready
+
+    if not template_path:
+        logger.error('Default template path is not configured.')
+        autoissue_ready = False
+        return
+
+    if not template_path.exists():
+        logger.error('Default template path is not existed.')
+        autoissue_ready = False
+        return
+    
+    template = get_template(template_path)
+    if not (hasattr(template, 'auto_issue') and callable(template.auto_issue)):
+        logger.error('Default template should have auto_issue function.')
+        autoissue_ready = False
+        return
+    
+    autoissue_ready = True
+
+
 def get_template(file_path):
-    template = imp.load_source(Path(file_path).stem, str(file_path))
-    return template
+    global last_template
+
+    if not last_template or last_template.__file__ != str(file_path):
+        last_template = imp.load_source(Path(file_path).stem, str(file_path))
+
+    return last_template
+
+
+def notice_handler(msg):
+    default_template_path = get_default_template_path()
+
+    if autoissue_ready is None:
+        default_template_check(default_template_path)
+    
+    if autoissue_ready == False:
+        return
+    
+    # Filter out messages with invalid types
+    if not isinstance(msg, dict):
+        return
+    
+    template = get_template(default_template_path)
+    template.auto_issue(msg)
