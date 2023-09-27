@@ -27,11 +27,15 @@ def get_workspace():
 
 
 def get_default_template_path():
-    bugit_workspace = application.config.get('bugit.workspace', '')
-    bugit_default_template = application.config.get('bugit.default_template', '')
-    template_path = Path(bugit_workspace + bugit_default_template)
-    if bugit_default_template:
-        return template_path
+    bugit_workspace = application.config.get('bugit.workspace')
+    if not bugit_workspace:
+        return
+    
+    bugit_default_template = application.config.get('bugit.default_template')
+    if not bugit_default_template:
+        return
+
+    return Path(bugit_workspace) / Path(bugit_default_template)
 
 
 def template_list():
@@ -69,6 +73,11 @@ def template_check(template):
 
 def default_template_check(template_path):
     global autoissue_ready
+
+    if not template_path:
+        logger.error('Default template path is not configured.')
+        autoissue_ready = False
+        return
 
     if not template_path.exists():
         logger.error('Default template path is not existed.')
