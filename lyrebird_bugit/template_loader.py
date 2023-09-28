@@ -1,5 +1,5 @@
-import imp
 import traceback
+from importlib import machinery
 from hashlib import md5
 from pathlib import Path
 from lyrebird import application
@@ -45,7 +45,8 @@ def template_list():
             continue
         try:
             logger.debug(f'Load template {template_file}')
-            template = imp.load_source(template_file.stem, str(template_file))
+            loader = machinery.SourceFileLoader(template_file.stem, str(template_file))
+            template = loader.load_module()
             template_check(template)
             relative_template_file_path = str(template_file).replace(str(Path.home()), '~')
             template_key = md5(relative_template_file_path.encode()).hexdigest()
@@ -97,7 +98,8 @@ def get_template(file_path):
     global last_template
 
     if not last_template or last_template.__file__ != str(file_path):
-        last_template = imp.load_source(Path(file_path).stem, str(file_path))
+        loader = machinery.SourceFileLoader(Path(file_path).stem, str(file_path))
+        last_template = loader.load_module()
 
     return last_template
 
