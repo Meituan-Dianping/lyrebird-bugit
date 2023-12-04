@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import json
 import codecs
 import lyrebird
 import requests
@@ -37,15 +38,16 @@ def export_snapshot(snapshot):
 def export_attachment_file(attachment_obj):
     _check_dir()
     full_name = f'{attachment_obj.get("name", "")}.{attachment_obj.get("attachmentType", "json")}'
-    res = requests.post(EVENT_EXPORT_URL, json=attachment_obj['eventObj'], stream=True)
-    if res.json().get('code', 1000) == 3000:
+
+    try:
+        with open(str(ATTACHMENT_ROOT / full_name), 'w') as f:
+            json.dump(attachment_obj['eventObj'], f, indent=4)
+    except Exception:
         return {
             'name': full_name,
             'path': str(ATTACHMENT_ROOT / full_name)
         }
-    with codecs.open(str(ATTACHMENT_ROOT / full_name), 'wb') as f:
-        for chunk in res.iter_content():
-            f.write(chunk)
+
     return {
         'id': str(uuid4()),
         'name': full_name,
