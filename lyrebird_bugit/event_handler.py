@@ -64,5 +64,6 @@ def on_upload_files(msg):
 def on_notice(msg):
     sender_file = msg.get('sender', {}).get('file', '')
     autoissue_checker = application.config.get('event.notice.autoissue.checker', [])
-    if sender_file in autoissue_checker:
+    autoissue_mptools = application.config.get('event.notice.autoissue.mptools.senderfile', [])
+    if sender_file in autoissue_checker or sender_file in autoissue_mptools:
         template_loader.notice_handler(msg)
