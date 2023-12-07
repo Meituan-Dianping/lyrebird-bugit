@@ -40,7 +40,7 @@ def export_attachment_file(attachment_obj):
     full_name = f'{attachment_obj.get("name", "")}.{attachment_obj.get("attachmentType", "json")}'
 
     try:
-        with open(str(ATTACHMENT_ROOT / full_name), 'w') as f:
+        with codecs.open(str(ATTACHMENT_ROOT / full_name), 'w') as f:
             json.dump(attachment_obj['eventObj'], f, indent=4)
     except Exception:
         return {
