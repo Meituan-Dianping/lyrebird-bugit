@@ -191,7 +191,7 @@ export default {
       if (eventObj.message) {
         this.$bus.$emit('addMessage', {
           channel: eventObj.channel,
-          message: eventObj.message,
+          message: this.get_event_message(eventObj),
           id: eventObj.id,
           sender: eventObj.sender
         })
@@ -210,7 +210,7 @@ export default {
           let fileName = `${eventObj.channel}_${eventObj.id}`
           this.$bus.$emit('addExportAttachments', {
             attachmentName: fileName,
-            attachmentObj: eventObj,
+            attachmentObj: this.getAttachmentObj(eventObj),
             // TODO: How to get other type's of file
             attachmentType: 'json'
           })
@@ -233,6 +233,30 @@ export default {
     onContextMenuShowAll () {
       this.$store.dispatch('showAll')
       this.isContextMenuShown = false
+    },
+    get_event_message (eventObj) {
+      if (eventObj.channel !== 'flow') {
+        return eventObj.message
+      }
+      let url = eventObj.flow.request.url
+      let method = eventObj.flow.request.method
+      let requestData = JSON.stringify(eventObj.flow.request.data)
+      if (requestData === undefined) {
+        requestData = JSON.stringify({})
+      }
+      let response = JSON.stringify(eventObj.flow.response)
+      let message = `URL: ${url}\nMethod: ${method}\nRequestData: ${requestData}\nResponse: ${response}`
+      return message
+    },
+    getAttachmentObj (eventObj) {
+      if (eventObj.channel === 'flow') {
+        const newEventobj = {
+          'request': eventObj.flow.request,
+          'response': eventObj.flow.response
+        }
+        return newEventobj
+      }
+      return eventObj
     }
   }
 }
