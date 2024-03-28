@@ -240,13 +240,13 @@ export default {
       }
       let url = eventObj.flow.request.url
       let method = eventObj.flow.request.method
-      let requestData = JSON.stringify(eventObj.flow.request.data, null, '\t')
+      let requestData = JSON.stringify(eventObj.flow.request.data)
       if (requestData === undefined) {
         requestData = JSON.stringify({})
       }
       let stringifyResponse = '{\n'
       for (let key in eventObj.flow.response) {
-        stringifyResponse += `\t"${key}": ${JSON.stringify(eventObj.flow.response[key])},\n`
+        stringifyResponse += `"${key}": ${JSON.stringify(eventObj.flow.response[key])},\n`
       }
       stringifyResponse = stringifyResponse.slice(0, -2) + '\n}'
       let message = `URL: ${url}\nMethod: ${method}\nRequestData: ${requestData}\nResponse: ${stringifyResponse}`
