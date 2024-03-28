@@ -16,6 +16,7 @@
         :format="['jpg','jpeg','png','gif','bmp','wbmp','webp','tif','psd']"
         accept=".jpg,.jpeg,.png,.gif,.bmp,.wbmp,.webp,.tif,.psd"
         :show-upload-list="false"
+        :before-upload="handleBeforeUpload"
       >
       <Tooltip
         placement="right"
@@ -31,6 +32,7 @@
 <script>
 import AttachmentItem from '@/components/form/AttachmentItem.vue'
 import ExportAttachmentItem from '@/components/form/ExportAttachmentItem.vue'
+import Compressor from "compressorjs"
 
 export default {
   components: {
@@ -56,6 +58,24 @@ export default {
     },
     addExportAttachment (exportAttachment) {
       this.$store.dispatch('addExportAttachment', exportAttachment)
+    },
+    handleBeforeUpload (file) {
+      return new Promise((resolve, reject) => {
+          let isLt1M = file.size / 1024 / 1024  < 2;
+          if (isLt1M) {
+            resolve(file);
+          } else {
+            new Compressor(file, {
+              quality: 0.8,
+              success: res =>{
+                resolve(new File([res], res.name, {type: res.type, lastModified: res.lastModified}));
+              },
+              error(err) {
+                reject(err)
+              }
+            });
+          }
+      });
     }
   }
 }
