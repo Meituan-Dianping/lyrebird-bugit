@@ -61,7 +61,7 @@ export default {
       const imageFileSuffix = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'wbmp', 'webp', 'tif', 'psd']
 
       let nameSplit = this.attachmentName.split('.')
-      let nameSuffix = nameSplit[nameSplit.length - 1]
+      let nameSuffix = nameSplit[nameSplit.length - 1].toLowerCase()
 
       return imageFileSuffix.indexOf(nameSuffix) > -1
     },
