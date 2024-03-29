@@ -9,7 +9,6 @@
   "dependencies": {
     "@toast-ui/vue-image-editor": "^1.0.2",
     "axios": "^0.27.2",
-    "compressorjs": "^1.2.1",
     "crypto": "^1.0.1",
     "monaco-editor": "^0.26.1",
     "socket.io-client": "^3.1.3",
