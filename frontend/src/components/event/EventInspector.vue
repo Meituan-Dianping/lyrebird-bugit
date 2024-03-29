@@ -244,8 +244,12 @@ export default {
       if (requestData === undefined) {
         requestData = JSON.stringify({})
       }
-      let response = JSON.stringify(eventObj.flow.response)
-      let message = `URL: ${url}\nMethod: ${method}\nRequestData: ${requestData}\nResponse: ${response}`
+      let stringifyResponse = '{\n'
+      for (let key in eventObj.flow.response) {
+        stringifyResponse += `"${key}": ${JSON.stringify(eventObj.flow.response[key])},\n`
+      }
+      stringifyResponse = stringifyResponse.slice(0, -2) + '\n}'
+      let message = `URL: ${url}\nMethod: ${method}\nRequestData: ${requestData}\nResponse: ${stringifyResponse}`
       return message
     },
     getAttachmentObj (eventObj) {
