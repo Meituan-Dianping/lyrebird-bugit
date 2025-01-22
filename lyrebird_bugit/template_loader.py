@@ -1,4 +1,4 @@
-import imp
+import importlib
 import traceback
 from hashlib import md5
 from pathlib import Path
@@ -45,7 +45,9 @@ def template_list():
             continue
         try:
             logger.debug(f'Load template {template_file}')
-            template = imp.load_source(template_file.stem, str(template_file))
+            spec = importlib.util.spec_from_file_location(template_file.stem, str(template_file))
+            template = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(template)
             template_check(template)
             relative_template_file_path = str(template_file).replace(str(Path.home()), '~')
             template_key = md5(relative_template_file_path.encode()).hexdigest()
@@ -97,7 +99,9 @@ def get_template(file_path):
     global last_template
 
     if not last_template or last_template.__file__ != str(file_path):
-        last_template = imp.load_source(Path(file_path).stem, str(file_path))
+        spec = importlib.util.spec_from_file_location(Path(file_path).stem, str(file_path))
+        last_template = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(last_template)
 
     return last_template
 
